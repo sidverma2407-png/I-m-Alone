@@ -11,7 +11,19 @@
 
 <canvas id="gameCanvas"></canvas>
 
-<script src="js/core/game.js"></script>
+<audio id="clockSound" loop>
+    <source src="assets/audio/clock-ticking.mp3" type="audio/mpeg">
+</audio>
 
-</body>
-</html>
+<!-- Core -->
+<script src="js/core/sceneManager.js"></script>
+
+<!-- Scenes -->
+
+<script src="js/scenes/menu.js"></script>
+<script src="js/scenes/intro.js"></script>
+<script src="js/scenes/bedroom.js"></script>
+<script src="js/scenes/house.js"></script>
+
+<!-- Main -->
+<script src="js/core/game.js"></script>
