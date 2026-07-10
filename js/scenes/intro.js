@@ -13,26 +13,26 @@ class IntroScene {
             "You were never alone.",
             "You are Sid.",
             "You wake up.",
-            "3:00 AM"
+            "3:14 AM"
 
         ];
 
-        this.index = 0;
+        this.current = 0;
+
+        this.state = "fadeIn";
+
+        this.alpha = 0;
 
         this.timer = 0;
-
-        this.fade = 0;
-
-        this.fadeIn = true;
 
     }
 
     start() {
 
-        this.index = 0;
+        this.current = 0;
+        this.state = "fadeIn";
+        this.alpha = 0;
         this.timer = 0;
-        this.fade = 0;
-        this.fadeIn = true;
 
         console.log("Intro Started");
 
@@ -40,37 +40,71 @@ class IntroScene {
 
     update() {
 
-        if(this.fadeIn){
+        switch(this.state){
 
-            this.fade += 0.02;
+            // --------------------
+            // Fade In
+            // --------------------
 
-            if(this.fade >= 1){
+            case "fadeIn":
 
-                this.fade = 1;
+                this.alpha += 0.01;
 
-                this.fadeIn = false;
+                if(this.alpha >= 1){
 
-            }
+                    this.alpha = 1;
 
-        }
+                    this.state = "hold";
 
-        this.timer++;
+                    this.timer = 0;
 
-        if(this.timer > 180){
+                }
 
-            this.timer = 0;
+            break;
 
-            this.fade = 0;
+            // --------------------
+            // Hold
+            // --------------------
 
-            this.fadeIn = true;
+            case "hold":
 
-            this.index++;
+                this.timer++;
 
-            if(this.index >= this.messages.length){
+                if(this.timer > 240){
 
-                sceneManager.change(bedroomScene);
+                    this.state = "fadeOut";
 
-            }
+                }
+
+            break;
+
+            // --------------------
+            // Fade Out
+            // --------------------
+
+            case "fadeOut":
+
+                this.alpha -= 0.01;
+
+                if(this.alpha <= 0){
+
+                    this.alpha = 0;
+
+                    this.current++;
+
+                    if(this.current >= this.messages.length){
+
+                        sceneManager.change(bedroomScene);
+
+                    }else{
+
+                        this.state = "fadeIn";
+
+                    }
+
+                }
+
+            break;
 
         }
 
@@ -78,20 +112,83 @@ class IntroScene {
 
     draw(){
 
+        // Background
+
         ctx.fillStyle = "black";
         ctx.fillRect(0,0,canvas.width,canvas.height);
 
-        ctx.globalAlpha = this.fade;
+        // Opacity
 
-        ctx.fillStyle = "white";
+        ctx.globalAlpha = this.alpha;
+
+        // Alignment
 
         ctx.textAlign = "center";
 
-        ctx.font = "bold 54px monospace";
+        // Blood red colours
+
+        switch(this.current){
+
+            case 0:
+
+                ctx.fillStyle="#ffffff";
+
+            break;
+
+            case 1:
+
+                ctx.fillStyle="#6b0000";
+
+            break;
+
+            case 2:
+
+                ctx.fillStyle="#850000";
+
+            break;
+
+            case 3:
+
+                ctx.fillStyle="#990000";
+
+            break;
+
+            case 4:
+
+                ctx.fillStyle = "#7A0000";
+                ctx.shadowColor = "#AA0000";
+                ctx.shadowBlur = 40;
+
+            break;
+
+        }
+
+        // Glow
+
+        ctx.shadowColor="#8b0000";
+        ctx.shadowBlur=35;
+
+        // Breathing Effect
+
+        const scale=1+Math.sin(Date.now()*0.0015)*0.02;
+
+        ctx.save();
+
+        ctx.translate(canvas.width/2,canvas.height/2);
+
+        ctx.scale(scale,scale);
+
+        ctx.translate(-canvas.width/2,-canvas.height/2);
+
+        // Font
+
+        ctx.font="700 64px Cinzel";
+
+        // Draw
 
         ctx.fillText(
 
-            this.messages[this.index],
+            this.messages[this.current],
 
             canvas.width/2,
 
@@ -99,9 +196,16 @@ class IntroScene {
 
         );
 
-        ctx.globalAlpha = 1;
+        ctx.restore();
+
+        // Reset
+
+        ctx.shadowBlur=0;
+
+        ctx.globalAlpha=1;
 
     }
 
 }
+
 const introScene = new IntroScene();

@@ -7,15 +7,16 @@ class MenuScene {
 
     constructor() {
 
-        // Press Enter animation
+        // Press ENTER animation
         this.alpha = 1;
         this.fade = -0.015;
 
-        // Slow camera zoom
+        // Camera Zoom
         this.zoom = 1;
 
-        // Flicker
+        // Title Flicker
         this.flicker = 1;
+        this.nextFlicker = 0;
 
         // Background
         this.background = new Image();
@@ -31,7 +32,10 @@ class MenuScene {
 
     update() {
 
-        // Blink Press Enter
+        // ------------------------
+        // PRESS ENTER Animation
+        // ------------------------
+
         this.alpha += this.fade;
 
         if (this.alpha <= 0.25 || this.alpha >= 1) {
@@ -40,7 +44,10 @@ class MenuScene {
 
         }
 
-        // Slow Zoom
+        // ------------------------
+        // Slow Camera Zoom
+        // ------------------------
+
         this.zoom += 0.00002;
 
         if (this.zoom > 1.05) {
@@ -49,19 +56,31 @@ class MenuScene {
 
         }
 
-        // Random light flicker
-        this.flicker = Math.random() < 0.01 ? 0.75 : 1;
+        // ------------------------
+        // Random Title Flicker
+        // ------------------------
+
+        if (Date.now() > this.nextFlicker) {
+
+            this.flicker = Math.random() < 0.5 ? 0.8 : 1;
+
+            this.nextFlicker = Date.now() + Math.random() * 6000 + 3000;
+
+        }
 
     }
 
     draw() {
 
-        // Clear
+        // ======================================
+        // Clear Screen
+        // ======================================
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        //-----------------------------------
+        // ======================================
         // Background
-        //-----------------------------------
+        // ======================================
 
         if (this.background.complete) {
 
@@ -73,30 +92,27 @@ class MenuScene {
                 this.background,
 
                 -(w - canvas.width) / 2,
+
                 -(h - canvas.height) / 2,
 
                 w,
+
                 h
 
             );
 
-        } else {
-
-            ctx.fillStyle = "black";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
         }
 
-        //-----------------------------------
+        // ======================================
         // Dark Overlay
-        //-----------------------------------
+        // ======================================
 
         ctx.fillStyle = "rgba(0,0,0,0.55)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        //-----------------------------------
+        // ======================================
         // Vignette
-        //-----------------------------------
+        // ======================================
 
         const gradient = ctx.createRadialGradient(
 
@@ -111,23 +127,19 @@ class MenuScene {
         );
 
         gradient.addColorStop(0, "rgba(0,0,0,0)");
-        gradient.addColorStop(1, "rgba(0,0,0,0.90)");
+        gradient.addColorStop(1, "rgba(0,0,0,0.92)");
 
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        //-----------------------------------
-        // Text
-        //-----------------------------------
+        // ======================================
+        // Studio
+        // ======================================
 
         ctx.textAlign = "center";
 
-        //-----------------------------------
-        // Studio
-        //-----------------------------------
-
-        ctx.fillStyle = "#dddddd";
-        ctx.font = "24px monospace";
+        ctx.fillStyle = "#d0d0d0";
+        ctx.font = "24px Cinzel";
 
         ctx.fillText(
 
@@ -140,8 +152,7 @@ class MenuScene {
         );
 
         ctx.fillStyle = "#888";
-
-        ctx.font = "18px monospace";
+        ctx.font = "18px Cinzel";
 
         ctx.fillText(
 
@@ -153,9 +164,9 @@ class MenuScene {
 
         );
 
-        //-----------------------------------
-        // Title
-        //-----------------------------------
+        // ======================================
+        // Game Title
+        // ======================================
 
         ctx.globalAlpha = this.flicker;
 
@@ -163,7 +174,7 @@ class MenuScene {
         ctx.shadowBlur = 30;
 
         ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 82px monospace";
+        ctx.font = "900 84px Cinzel";
 
         ctx.fillText(
 
@@ -179,12 +190,12 @@ class MenuScene {
 
         ctx.shadowBlur = 0;
 
-        //-----------------------------------
+        // ======================================
         // Subtitle
-        //-----------------------------------
+        // ======================================
 
-        ctx.fillStyle = "#a0a0a0";
-        ctx.font = "26px monospace";
+        ctx.fillStyle = "#9a9a9a";
+        ctx.font = "24px Cinzel";
 
         ctx.fillText(
 
@@ -196,17 +207,17 @@ class MenuScene {
 
         );
 
-        //-----------------------------------
-        // Press ENTER
-        //-----------------------------------
+        // ======================================
+        // PRESS ENTER
+        // ======================================
 
         ctx.globalAlpha = this.alpha;
 
-        ctx.fillStyle = "#ffffff";
-
         const size = 30 + Math.sin(Date.now() * 0.004) * 2;
 
-        ctx.font = `bold ${size}px monospace`;
+        ctx.fillStyle = "#ffffff";
+
+        ctx.font = `700 ${size}px Cinzel`;
 
         ctx.fillText(
 
@@ -220,15 +231,15 @@ class MenuScene {
 
         ctx.globalAlpha = 1;
 
-        //-----------------------------------
-        // Footer Left
-        //-----------------------------------
+        // ======================================
+        // Footer
+        // ======================================
 
         ctx.textAlign = "left";
 
         ctx.fillStyle = "#777";
 
-        ctx.font = "16px monospace";
+        ctx.font = "15px Cinzel";
 
         ctx.fillText(
 
@@ -239,10 +250,6 @@ class MenuScene {
             canvas.height - 30
 
         );
-
-        //-----------------------------------
-        // Footer Right
-        //-----------------------------------
 
         ctx.textAlign = "right";
 
@@ -258,15 +265,30 @@ class MenuScene {
 
     }
 
-    keyDown(e) {
+    async keyDown(e) {
 
         if (e.key !== "Enter")
             return;
 
-        sceneManager.change(introScene);
+        try {
 
-        // Later:
-        // sceneManager.change(introScene);
+            if (clockSound.paused) {
+
+                clockSound.volume = 0.18;
+
+                await clockSound.play();
+
+            }
+
+        }
+
+        catch(err){
+
+            console.log(err);
+
+        }
+
+        sceneManager.change(introScene);
 
     }
 

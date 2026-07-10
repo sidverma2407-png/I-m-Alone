@@ -9,6 +9,7 @@ const ctx = canvas.getContext("2d");
 
 // Audio
 const clockSound = document.getElementById("clockSound");
+clockSound.volume = 0.18;
 
 // Resize Canvas
 function resizeCanvas() {
@@ -89,3 +90,23 @@ window.addEventListener("click", async () => {
 sceneManager.change(menuScene);
 
 gameLoop();
+
+window.addEventListener("click", async () => {
+
+    try {
+
+        if (clockSound.paused) {
+
+            await clockSound.play();
+
+        }
+
+    }
+
+    catch(err){
+
+        console.log(err);
+
+    }
+
+}, { once:true });
