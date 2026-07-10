@@ -263,7 +263,7 @@ class MenuScene {
         if (e.key !== "Enter")
             return;
 
-        console.log("Starting Game...");
+        sceneManager.change(introScene);
 
         // Later:
         // sceneManager.change(introScene);
