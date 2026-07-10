@@ -1,31 +1,49 @@
-class BedroomScene{
+// =========================================
+// Bedroom Scene
+// =========================================
 
-    start(){
+class BedroomScene {
+
+    constructor() {
+
+        this.brightness = 0;
+
+    }
+
+    start() {
+
+        this.brightness = 0;
 
         console.log("Bedroom Loaded");
 
     }
 
-    update(){}
+    update() {
 
-    draw(){
+        if (this.brightness < 1) {
 
-        ctx.fillStyle="black";
+            this.brightness += 0.005;
 
-        ctx.fillRect(
+        }
 
-            0,
-            0,
-            canvas.width,
-            canvas.height
+    }
 
-        );
+    draw() {
 
-        ctx.fillStyle="white";
+        // Room
 
-        ctx.font="40px monospace";
+        ctx.fillStyle = "#242424";
+        ctx.fillRect(0,0,canvas.width,canvas.height);
 
-        ctx.textAlign="center";
+        // Temporary Text
+
+        ctx.globalAlpha = this.brightness;
+
+        ctx.fillStyle = "white";
+
+        ctx.font = "42px Cinzel";
+
+        ctx.textAlign = "center";
 
         ctx.fillText(
 
@@ -37,8 +55,10 @@ class BedroomScene{
 
         );
 
+        ctx.globalAlpha = 1;
+
     }
 
 }
 
-const bedroomScene=new BedroomScene();
+const bedroomScene = new BedroomScene();

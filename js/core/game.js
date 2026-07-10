@@ -34,9 +34,14 @@ function gameLoop() {
 
     // Update Current Scene
     sceneManager.update();
+    fadeManager.update();
 
     // Draw Current Scene
     sceneManager.draw();
+    fadeManager.draw();
+
+    cinematicBars.update();
+    cinematicBars.draw();
 
     requestAnimationFrame(gameLoop);
 

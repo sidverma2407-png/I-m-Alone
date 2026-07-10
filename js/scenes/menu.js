@@ -288,7 +288,11 @@ class MenuScene {
 
         }
 
-        sceneManager.change(introScene);
+        fadeManager.fadeOut(() => {
+
+           sceneManager.change(introScene);
+
+});
 
     }
 

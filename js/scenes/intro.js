@@ -10,10 +10,10 @@ class IntroScene {
         this.messages = [
 
             "GAME STARTING...",
-            "You were never alone.",
             "You are Sid.",
             "You wake up.",
-            "3:14 AM"
+            "3:14 AM",
+            "You were never alone."
 
         ];
 
@@ -33,6 +33,8 @@ class IntroScene {
         this.state = "fadeIn";
         this.alpha = 0;
         this.timer = 0;
+
+        cinematicBars.show();
 
         console.log("Intro Started");
 
@@ -94,7 +96,13 @@ class IntroScene {
 
                     if(this.current >= this.messages.length){
 
-                        sceneManager.change(bedroomScene);
+                        fadeManager.fadeOut(() => {
+
+                            cinematicBars.hide();
+
+                            sceneManager.change(bedroomScene);
+
+});
 
                     }else{
 
@@ -166,7 +174,7 @@ class IntroScene {
         // Glow
 
         ctx.shadowColor="#8b0000";
-        ctx.shadowBlur=35;
+        ctx.shadowBlur = 25 + Math.sin(Date.now()*0.004)*10;
 
         // Breathing Effect
 
@@ -182,7 +190,9 @@ class IntroScene {
 
         // Font
 
-        ctx.font="700 64px Cinzel";
+        const fontSize = 64 + Math.sin(Date.now()*0.002)*2;
+
+        ctx.font = `700 ${fontSize}px Cinzel`;
 
         // Draw
 
