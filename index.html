@@ -19,8 +19,25 @@
 
 <canvas id="gameCanvas"></canvas>
 
+<audio id="menuMusic" loop>
+    <source src="assets/audio/menu-music.mp3" type="audio/mpeg">
+</audio>
+
 <audio id="clockSound" loop>
     <source src="assets/audio/clock-ticking.mp3.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="windSound" loop>
+    <source src="assets/audio/wind.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="rainSound" loop>
+    <source src="assets/audio/rain.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="ambientSound" loop>
+    <source src="assets/audio/ambient.mp3" type="audio/mpeg">
+
 </audio>
 
 <!-- Core -->
@@ -28,10 +45,15 @@
 <script src="js/core/fadeManager.js"></script>
 <script src="js/effects/cinematicBars.js"></script>
 
+
 <!-- Scenes -->
+    <script src="js/effects/cameraShake.js"></script>
+
+    <script src="js/effects/lightning.js"></script>
 
 <script src="js/scenes/menu.js"></script>
 <script src="js/scenes/intro.js"></script>
+<script src="js/entities/player.js"></script>
 <script src="js/scenes/bedroom.js"></script>
 <script src="js/scenes/house.js"></script>
 

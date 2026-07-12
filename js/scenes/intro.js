@@ -72,7 +72,7 @@ class IntroScene {
 
                 this.timer++;
 
-                if(this.timer > 240){
+                if(this.timer > 173){
 
                     this.state = "fadeOut";
 

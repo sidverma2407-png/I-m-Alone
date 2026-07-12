@@ -7,11 +7,60 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+// =========================================
 // Audio
-const clockSound = document.getElementById("clockSound");
-clockSound.volume = 0.18;
+// =========================================
 
+const menuMusic = document.getElementById("menuMusic");
+const clockSound = document.getElementById("clockSound");
+const rainSound = document.getElementById("rainSound");
+const windSound = document.getElementById("windSound");
+const ambientSound = document.getElementById("ambientSound");
+// Effects
+
+
+// Default Volumes
+menuMusic.volume = 0.25;
+clockSound.volume = 0.18;
+rainSound.volume = 0.35;
+windSound.volume = 0.25;
+ambientSound.volume = 0.20;
+
+// Unlock audio after first user interaction
+let audioUnlocked = false;
+
+window.addEventListener("click", unlockAudio, { once: true });
+window.addEventListener("keydown", unlockAudio, { once: true });
+
+async function unlockAudio() {
+
+    if (audioUnlocked) return;
+
+    audioUnlocked = true;
+
+    try {
+
+        // Play silently once to unlock browser audio
+        menuMusic.volume = 0;
+        await menuMusic.play();
+        menuMusic.pause();
+        menuMusic.currentTime = 0;
+        menuMusic.volume = 0.25;
+
+    }
+
+    catch (err) {
+
+        console.log("Audio unlocked.");
+
+    }
+
+}
+
+// =========================================
 // Resize Canvas
+// =========================================
+
 function resizeCanvas() {
 
     canvas.width = window.innerWidth;
@@ -29,15 +78,19 @@ window.addEventListener("resize", resizeCanvas);
 
 function gameLoop() {
 
-    // Clear Screen
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Update Current Scene
+    lightning.update();
+
     sceneManager.update();
     fadeManager.update();
 
-    // Draw Current Scene
-    sceneManager.draw();
+    cameraShake.begin();
+
+sceneManager.draw();
+lightning.draw();
+
+cameraShake.end();
     fadeManager.draw();
 
     cinematicBars.update();
@@ -64,54 +117,9 @@ window.addEventListener("keyup", (e) => {
 });
 
 // =========================================
-// Mouse (used later)
-// =========================================
-
-window.addEventListener("click", async () => {
-
-    if (clockSound.paused) {
-
-        try {
-
-            clockSound.volume = 0.25;
-            await clockSound.play();
-
-        }
-
-        catch (err) {
-
-            console.log(err);
-
-        }
-
-    }
-
-}, { once: true });
-
-// =========================================
 // Start Game
 // =========================================
 
 sceneManager.change(menuScene);
 
 gameLoop();
-
-window.addEventListener("click", async () => {
-
-    try {
-
-        if (clockSound.paused) {
-
-            await clockSound.play();
-
-        }
-
-    }
-
-    catch(err){
-
-        console.log(err);
-
-    }
-
-}, { once:true });

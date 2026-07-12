@@ -1,64 +1,39 @@
-// =========================================
-// Bedroom Scene
-// =========================================
-
 class BedroomScene {
 
     constructor() {
 
-        this.brightness = 0;
+        this.background = new Image();
+        this.background.src = "assets/images/bedroom.png";
 
     }
 
     start() {
 
-        this.brightness = 0;
-
         console.log("Bedroom Loaded");
 
     }
 
+    // 👇 REPLACE THIS
     update() {
 
-        if (this.brightness < 1) {
-
-            this.brightness += 0.005;
-
-        }
+        player.update();
 
     }
 
-    draw() {
+    // 👇 REPLACE THIS
+draw() {
 
-        // Room
+    ctx.drawImage(
+        this.background,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
 
-        ctx.fillStyle = "#242424";
-        ctx.fillRect(0,0,canvas.width,canvas.height);
+    player.draw();
 
-        // Temporary Text
-
-        ctx.globalAlpha = this.brightness;
-
-        ctx.fillStyle = "white";
-
-        ctx.font = "42px Cinzel";
-
-        ctx.textAlign = "center";
-
-        ctx.fillText(
-
-            "Bedroom Coming Soon...",
-
-            canvas.width/2,
-
-            canvas.height/2
-
-        );
-
-        ctx.globalAlpha = 1;
-
-    }
-
+}
 }
 
 const bedroomScene = new BedroomScene();
