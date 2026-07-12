@@ -104,13 +104,29 @@ cameraShake.end();
 // Keyboard
 // =========================================
 
-window.addEventListener("keydown", (e) => {
+window.addEventListener("keydown",(e)=>{
+
+    if(e.key==="a" || e.key==="ArrowLeft")
+        player.left=true;
+
+    if(e.key==="d" || e.key==="ArrowRight")
+        player.right=true;
 
     sceneManager.keyDown(e);
 
 });
 
-window.addEventListener("keyup", (e) => {
+   
+
+
+
+window.addEventListener("keyup",(e)=>{
+
+    if(e.key==="a" || e.key==="ArrowLeft")
+        player.left=false;
+
+    if(e.key==="d" || e.key==="ArrowRight")
+        player.right=false;
 
     sceneManager.keyUp(e);
 
