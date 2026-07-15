@@ -1,18 +1,20 @@
 // =========================================
-// Player
+// PLAYER
 // =========================================
 
 class Player {
 
     constructor() {
 
-        this.width = 60;
-        this.height = 110;
+        // Position (adjust if needed)
+        this.x = 250;
+        this.y = 470;
 
-        // Spawn beside the bed
-        this.x = 900;
-        this.y = 720;
+        // Character Size
+        this.width = 260;
+        this.height = 260;
 
+        // Movement
         this.speed = 4;
 
         this.left = false;
@@ -20,20 +22,26 @@ class Player {
 
         this.direction = 1;
 
-        // Animation
-        this.walkFrame = 0;
+        this.control = true;
+
+        // Idle Animation
+        this.idle = new SpriteAnimator(
+            "assets/sprites/sid/idle/idle",
+            8
+        );
 
     }
 
     update() {
 
-        let moving = false;
+        // Animate Idle
+        this.idle.update();
 
+        // Movement
         if (this.left) {
 
             this.x -= this.speed;
             this.direction = -1;
-            moving = true;
 
         }
 
@@ -41,73 +49,51 @@ class Player {
 
             this.x += this.speed;
             this.direction = 1;
-            moving = true;
 
         }
 
-        if (moving) {
+        // Room Boundaries
+        if (this.x < 100)
+            this.x = 100;
 
-            this.walkFrame += 0.22;
-
-        }
-
-        // Room boundaries
-        if (this.x < 120)
-            this.x = 120;
-
-        if (this.x > canvas.width - 120)
-            this.x = canvas.width - 120;
+        if (this.x > canvas.width - this.width - 50)
+            this.x = canvas.width - this.width - 50;
 
     }
 
     draw() {
 
-    ctx.save();
+        ctx.save();
 
-    // Draw at player's position
-    ctx.translate(this.x, this.y);
+        if (this.direction === -1) {
 
-    // Shadow
-    ctx.fillStyle = "rgba(0,0,0,0.35)";
-    ctx.beginPath();
-    ctx.ellipse(0, 25, 18, 8, 0, 0, Math.PI * 2);
-    ctx.fill();
+            ctx.translate(this.x + this.width, this.y);
+            ctx.scale(-1, 1);
 
-    // Body (bright blue so it's impossible to miss)
-    ctx.fillStyle = "#00BFFF";
-    ctx.fillRect(-15, -55, 30, 45);
+            this.idle.draw(
+                0,
+                0,
+                this.width,
+                this.height
+            );
 
-    // Head
-    ctx.fillStyle = "#FFD7B5";
-    ctx.beginPath();
-    ctx.arc(0, -70, 15, 0, Math.PI * 2);
-    ctx.fill();
+        }
 
-    // Arms
-    ctx.fillStyle = "#FFD7B5";
-    ctx.fillRect(-22, -52, 7, 32);
-    ctx.fillRect(15, -52, 7, 32);
+        else {
 
-    // Legs
-    ctx.fillStyle = "#222";
-    ctx.fillRect(-11, -10, 8, 35);
-    ctx.fillRect(3, -10, 8, 35);
+            this.idle.draw(
+                this.x,
+                this.y,
+                this.width,
+                this.height
+            );
 
-    // Shoes
-    ctx.fillStyle = "#FFF";
-    ctx.fillRect(-12, 25, 10, 4);
-    ctx.fillRect(2, 25, 10, 4);
+        }
 
-    // Debug circle
-    ctx.strokeStyle = "red";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(0, 0, 45, 0, Math.PI * 2);
-    ctx.stroke();
+        ctx.restore();
 
-    ctx.restore();
+    }
 
-}
 }
 
 const player = new Player();

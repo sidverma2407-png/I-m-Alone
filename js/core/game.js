@@ -16,6 +16,9 @@ const clockSound = document.getElementById("clockSound");
 const rainSound = document.getElementById("rainSound");
 const windSound = document.getElementById("windSound");
 const ambientSound = document.getElementById("ambientSound");
+const thunderSound = document.getElementById("thunderSound");
+
+thunderSound.volume = 0.65;
 // Effects
 
 

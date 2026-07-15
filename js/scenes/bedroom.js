@@ -5,6 +5,9 @@ class BedroomScene {
         this.background = new Image();
         this.background.src = "assets/images/bedroom.png";
 
+        this.introTimer = 0;
+        this.thunderPlayed = false;
+
     }
 
     start() {
