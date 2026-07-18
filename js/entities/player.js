@@ -6,12 +6,12 @@ class Player {
 
     constructor() {
 
-        // Position (adjust if needed)
-        this.x = 250;
-        this.y = 470;
+        // Position
+        this.x = 120;
+        this.y = 285;
 
-        // Character Size
-        this.width = 260;
+        // Size
+        this.width = 520;
         this.height = 260;
 
         // Movement
@@ -22,42 +22,106 @@ class Player {
 
         this.direction = 1;
 
-        this.control = true;
+        this.control = false;
 
-        // Idle Animation
-        this.idle = new SpriteAnimator(
-            "assets/sprites/sid/idle/idle",
-            8
-        );
+        // -------------------------
+        // Player State
+        // -------------------------
+
+        this.state = "sleep";
+
+        // -------------------------
+        // Sleep Sprite
+        // -------------------------
+
+        this.sleep = new Image();
+        this.sleep.src =
+            "assets/sprites/sid/sleep/sleep1.png";
+
+        // -------------------------
+        // Wake Animation
+        // -------------------------
+
+        this.wake = [];
+
+        for(let i = 1; i <= 3; i++){
+
+            const img = new Image();
+
+            img.src =
+                `assets/sprites/sid/wake/wake${i}.png`;
+
+            this.wake.push(img);
+
+        }
+
+        this.wakeFrame = 0;
+        this.wakeTimer = 0;
 
     }
 
     update() {
 
-        // Animate Idle
-        this.idle.update();
+        //------------------------------------------------
+        // Wake Animation
+        //------------------------------------------------
 
+        if(this.state === "wake"){
+
+            this.wakeTimer++;
+
+            if(this.wakeTimer >= 35){
+
+                this.wakeTimer = 0;
+
+                this.wakeFrame++;
+
+                if(this.wakeFrame >= this.wake.length){
+
+                    // Stay on last wake frame until idle sprites are ready
+                    this.wakeFrame = this.wake.length - 1;
+
+                    this.state = "idle";
+
+                    this.control = true;
+
+                }
+
+            }
+
+        }
+
+        //------------------------------------------------
         // Movement
-        if (this.left) {
+        //------------------------------------------------
 
-            this.x -= this.speed;
-            this.direction = -1;
+        if(this.control){
+
+            if(this.left){
+
+                this.x -= this.speed;
+                this.direction = -1;
+
+            }
+
+            if(this.right){
+
+                this.x += this.speed;
+                this.direction = 1;
+
+            }
 
         }
 
-        if (this.right) {
+        //------------------------------------------------
+        // Room Limits
+        //------------------------------------------------
 
-            this.x += this.speed;
-            this.direction = 1;
+        if(this.x < 80)
+            this.x = 80;
 
-        }
-
-        // Room Boundaries
-        if (this.x < 100)
-            this.x = 100;
-
-        if (this.x > canvas.width - this.width - 50)
-            this.x = canvas.width - this.width - 50;
+        if(this.x > canvas.width - this.width - 80)
+            this.x = canvas.width - this.width - 80;
 
     }
 
@@ -65,32 +129,105 @@ class Player {
 
         ctx.save();
 
-        if (this.direction === -1) {
+        if(this.direction == -1){
 
-            ctx.translate(this.x + this.width, this.y);
-            ctx.scale(-1, 1);
+            ctx.translate(
+                this.x + this.width,
+                this.y
+            );
 
-            this.idle.draw(
+            ctx.scale(-1,1);
+
+            this.drawState(
                 0,
-                0,
-                this.width,
-                this.height
+                0
             );
 
         }
 
-        else {
+        else{
 
-            this.idle.draw(
+            this.drawState(
                 this.x,
-                this.y,
-                this.width,
-                this.height
+                this.y
             );
 
         }
 
         ctx.restore();
+
+    }
+
+    drawState(x,y){
+
+        switch(this.state){
+
+            //-------------------------------------
+            // Sleeping
+            //-------------------------------------
+
+            case "sleep":
+
+                ctx.drawImage(
+
+                    this.sleep,
+
+                    x,
+                    y,
+
+                    this.width,
+                    this.height
+
+                );
+
+            break;
+
+            //-------------------------------------
+            // Wake Animation
+            //-------------------------------------
+
+            case "wake":
+
+                ctx.drawImage(
+
+                    this.wake[
+                        this.wakeFrame
+                    ],
+
+                    x,
+                    y,
+
+                    this.width,
+                    this.height
+
+                );
+
+            break;
+
+            //-------------------------------------
+            // Idle
+            //-------------------------------------
+
+            case "idle":
+
+                // Temporary:
+                // Show last wake frame until idle sprites are created
+
+                ctx.drawImage(
+
+                    this.wake[2],
+
+                    x,
+                    y,
+
+                    this.width,
+                    this.height
+
+                );
+
+            break;
+
+        }
 
     }
 

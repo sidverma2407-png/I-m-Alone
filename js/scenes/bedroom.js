@@ -1,3 +1,7 @@
+// =========================================
+// BEDROOM SCENE
+// =========================================
+
 class BedroomScene {
 
     constructor() {
@@ -5,8 +9,8 @@ class BedroomScene {
         this.background = new Image();
         this.background.src = "assets/images/bedroom.png";
 
-        this.introTimer = 0;
-        this.thunderPlayed = false;
+        this.sequence = 0;
+        this.timer = 0;
 
     }
 
@@ -14,14 +18,30 @@ class BedroomScene {
 
         console.log("Bedroom Loaded");
 
-        // Fade out clock ticking
+        this.sequence = 0;
+        this.timer = 0;
+
+        introSound.pause();
+    introSound.currentTime = 0;
+    introSound.play().catch(err => console.log(err));
+
+
+        
+
+        player.state = "sleep";
+        player.control = false;
+
+        // Fade clock sound
+
         const fadeClock = setInterval(() => {
 
             if (clockSound.volume > 0.01) {
 
                 clockSound.volume -= 0.01;
 
-            } else {
+            }
+
+            else {
 
                 clearInterval(fadeClock);
 
@@ -33,73 +53,78 @@ class BedroomScene {
 
         }, 80);
 
-        // ----------------------------
-        // Interaction Objects
-        // ----------------------------
-
         interactionManager.objects = [];
-
-        // Bed
-        interactionManager.add({
-
-            x: 260,
-            y: 520,
-            range: 120,
-
-            text: "It's still warm..."
-
-        });
-
-        // Window
-        interactionManager.add({
-
-            x: canvas.width / 2,
-            y: 320,
-            range: 140,
-
-            text: "It's raining outside..."
-
-        });
-
-        // Clock
-        interactionManager.add({
-
-            x: 180,
-            y: 180,
-            range: 120,
-
-            text: "3:15 AM"
-
-        });
-
-        // Desk
-        interactionManager.add({
-
-            x: canvas.width - 260,
-            y: 430,
-            range: 140,
-
-            text: "My notebook..."
-
-        });
-
-        // Door
-        interactionManager.add({
-
-            x: canvas.width - 80,
-            y: 420,
-            range: 120,
-
-            text: "It's locked."
-
-        });
 
     }
 
     update() {
 
-        player.update();
+        this.timer++;
 
+        switch (this.sequence) {
+
+            //---------------------------------
+            // Sleep for 3 seconds
+            //---------------------------------
+
+            case 0:
+
+                if (this.timer >= 180) {
+
+                    this.timer = 0;
+                    this.sequence = 1;
+
+                }
+
+            break;
+
+            //---------------------------------
+            // Thunder + Lightning
+            //---------------------------------
+
+            case 1:
+
+                lightning.flash();
+
+                thunderSound.currentTime = 0;
+                thunderSound.play();
+
+                // Change to wake when ready
+                player.state = "wake";
+
+                this.timer = 0;
+                this.sequence = 2;
+
+            break;
+
+            //---------------------------------
+            // Wake for 2 seconds
+            //---------------------------------
+
+            case 2:
+
+                if (this.timer >= 120) {
+
+                    player.state = "idle";
+                    player.control = true;
+
+                    this.sequence = 3;
+
+                }
+
+            break;
+
+            //---------------------------------
+            // Gameplay
+            //---------------------------------
+
+            case 3:
+
+            break;
+
+        }
+
+        player.update();
         interactionManager.update();
 
     }
@@ -107,16 +132,11 @@ class BedroomScene {
     draw() {
 
         ctx.drawImage(
-
             this.background,
-
             0,
             0,
-
             canvas.width,
-
             canvas.height
-
         );
 
         player.draw();

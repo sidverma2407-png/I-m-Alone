@@ -27,6 +27,7 @@ class CameraShake {
         ctx.translate(
 
             (Math.random() - 0.5) * this.strength,
+
             (Math.random() - 0.5) * this.strength
 
         );
@@ -37,9 +38,15 @@ class CameraShake {
 
     end() {
 
-        if (this.duration > 0) {
+        if (this.duration >= 0) {
 
-            ctx.restore();
+            try{
+
+                ctx.restore();
+
+            }
+
+            catch(e){}
 
         }
 

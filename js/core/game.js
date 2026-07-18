@@ -19,6 +19,9 @@ const ambientSound = document.getElementById("ambientSound");
 const thunderSound = document.getElementById("thunderSound");
 
 thunderSound.volume = 0.65;
+
+const introSound = document.getElementById("introSound");
+introSound.volume = 0.8;
 // Effects
 
 
