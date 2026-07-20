@@ -21,27 +21,32 @@ class BedroomScene {
         this.sequence = 0;
         this.timer = 0;
 
+        // Intro Sound
         introSound.pause();
-    introSound.currentTime = 0;
-    introSound.play().catch(err => console.log(err));
+        introSound.currentTime = 0;
+        introSound.play().catch(err => console.log(err));
 
+        // Reset Player
+        player.x = 120;
+        player.y = 285;
 
-        
+        player.width = 520;
+        player.height = 260;
 
         player.state = "sleep";
         player.control = false;
 
-        // Fade clock sound
+        player.wakeFrame = 0;
+        player.wakeTimer = 0;
 
+        // Fade Clock Sound
         const fadeClock = setInterval(() => {
 
             if (clockSound.volume > 0.01) {
 
                 clockSound.volume -= 0.01;
 
-            }
-
-            else {
+            } else {
 
                 clearInterval(fadeClock);
 
@@ -64,14 +69,22 @@ class BedroomScene {
         switch (this.sequence) {
 
             //---------------------------------
-            // Sleep for 3 seconds
+            // Sleep (5 seconds)
             //---------------------------------
 
             case 0:
 
-                if (this.timer >= 180) {
+                if (this.timer >= 300) {
 
-                    this.timer = 0;
+                    lightning.flash();
+
+                    thunderSound.currentTime = 0;
+                    thunderSound.play();
+
+                    player.state = "wake";
+                    player.wakeFrame = 0;
+                    player.wakeTimer = 0;
+
                     this.sequence = 1;
 
                 }
@@ -79,34 +92,58 @@ class BedroomScene {
             break;
 
             //---------------------------------
-            // Thunder + Lightning
+            // Wait until wake animation finishes
             //---------------------------------
 
             case 1:
 
-                lightning.flash();
+                if (player.wakeFrame >= 2) {
 
-                thunderSound.currentTime = 0;
-                thunderSound.play();
+                    fadeManager.fadeOut(() => {
 
-                // Change to wake when ready
-                player.state = "wake";
+                          // Move Sid beside the bed
 
-                this.timer = 0;
-                this.sequence = 2;
+    player.width = 240;
+    player.height = 400;
+
+    player.x = 560;
+    player.y = canvas.height - player.height - 40;
+
+    player.state = "stand";
+
+    this.timer = 0;
+
+    this.sequence = 2;
+
+});
+
+                    this.sequence = 99;
+
+                }
 
             break;
 
             //---------------------------------
-            // Wake for 2 seconds
+            // Waiting while fading out
+            //---------------------------------
+
+            case 99:
+
+            break;
+
+            //---------------------------------
+            // Stand for 1 second
             //---------------------------------
 
             case 2:
 
-                if (this.timer >= 120) {
+                if (this.timer >= 60) {
 
                     player.state = "idle";
+
                     player.control = true;
+
+                    fadeManager.fadeIn();
 
                     this.sequence = 3;
 
@@ -125,7 +162,10 @@ class BedroomScene {
         }
 
         player.update();
+
         interactionManager.update();
+
+        fadeManager.update();
 
     }
 
@@ -144,6 +184,8 @@ class BedroomScene {
         interactionManager.draw();
 
         dialogueBox.draw();
+
+        fadeManager.draw();
 
     }
 
