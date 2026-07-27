@@ -39,11 +39,10 @@ class Player {
 
         this.wake = [];
 
-        for(let i=1;i<=3;i++){
+        for (let i = 1; i <= 4; i++) {
 
-            let img = new Image();
+            const img = new Image();
             img.src = `assets/sprites/sid/wake/wake${i}.png`;
-
             this.wake.push(img);
 
         }
@@ -58,23 +57,40 @@ class Player {
         this.stand = new Image();
         this.stand.src = "assets/sprites/sid/stand/stand1.png";
 
+        // -------------------------
+        // Walk Animation
+        // -------------------------
+
+        this.walk = [];
+
+        for (let i = 1; i <= 4; i++) {
+
+            const img = new Image();
+            img.src = `assets/sprites/sid/walk/walk${i}.png`;
+            this.walk.push(img);
+
+        }
+
+        this.walkFrame = 0;
+        this.walkTimer = 0;
+
     }
 
-    update(){
+    update() {
 
         //---------------------------------
         // Wake Animation
         //---------------------------------
 
-        if(this.state=="wake"){
+        if (this.state === "wake") {
 
             this.wakeTimer++;
 
-            if(this.wakeTimer>=35){
+            if (this.wakeTimer >= 20) {
 
-                this.wakeTimer=0;
+                this.wakeTimer = 0;
 
-                if(this.wakeFrame<2){
+                if (this.wakeFrame < this.wake.length - 1) {
 
                     this.wakeFrame++;
 
@@ -85,22 +101,54 @@ class Player {
         }
 
         //---------------------------------
-        // Movement
+        // Walking
         //---------------------------------
 
-        if(this.control){
+        if (this.control) {
 
-            if(this.left){
+            let moving = false;
 
-                this.x-=this.speed;
-                this.direction=-1;
+            if (this.left) {
+
+                this.x -= this.speed;
+                this.direction = -1;
+                moving = true;
 
             }
 
-            if(this.right){
+            if (this.right) {
 
-                this.x+=this.speed;
-                this.direction=1;
+                this.x += this.speed;
+                this.direction = 1;
+                moving = true;
+
+            }
+
+            if (moving) {
+
+                this.state = "walk";
+
+                this.walkTimer++;
+
+                if (this.walkTimer >= 8) {
+
+                    this.walkTimer = 0;
+
+                    this.walkFrame++;
+
+                    if (this.walkFrame >= this.walk.length) {
+
+                        this.walkFrame = 0;
+
+                    }
+
+                }
+
+            } else {
+
+                this.state = "stand";
+
+                this.walkFrame = 0;
 
             }
 
@@ -110,30 +158,28 @@ class Player {
         // Room Limits
         //---------------------------------
 
-        if(this.x<80)
-            this.x=80;
+        if (this.x < 80)
+            this.x = 80;
 
-        if(this.x>canvas.width-this.width-80)
-            this.x=canvas.width-this.width-80;
+        if (this.x > canvas.width - this.width - 80)
+            this.x = canvas.width - this.width - 80;
 
     }
 
-    draw(){
+    draw() {
 
         ctx.save();
 
-        if(this.direction==-1){
+        if (this.direction == -1) {
 
-            ctx.translate(this.x+this.width,this.y);
-            ctx.scale(-1,1);
+            ctx.translate(this.x + this.width, this.y);
+            ctx.scale(-1, 1);
 
-            this.drawState(0,0);
+            this.drawState(0, 0);
 
-        }
+        } else {
 
-        else{
-
-            this.drawState(this.x,this.y);
+            this.drawState(this.x, this.y);
 
         }
 
@@ -141,9 +187,13 @@ class Player {
 
     }
 
-    drawState(x,y){
+    drawState(x, y) {
 
-        switch(this.state){
+        switch (this.state) {
+
+            //---------------------------------
+            // Sleep
+            //---------------------------------
 
             case "sleep":
 
@@ -157,6 +207,10 @@ class Player {
 
             break;
 
+            //---------------------------------
+            // Wake
+            //---------------------------------
+
             case "wake":
 
                 ctx.drawImage(
@@ -168,6 +222,10 @@ class Player {
                 );
 
             break;
+
+            //---------------------------------
+            // Stand
+            //---------------------------------
 
             case "stand":
 
@@ -181,9 +239,27 @@ class Player {
 
             break;
 
-            case "idle":
+            //---------------------------------
+            // Walk
+            //---------------------------------
 
-                // Temporary until idle sprites are ready
+            case "walk":
+
+                ctx.drawImage(
+                    this.walk[this.walkFrame],
+                    x,
+                    y,
+                    this.width,
+                    this.height
+                );
+
+            break;
+
+            //---------------------------------
+            // Idle (same as stand for now)
+            //---------------------------------
+
+            case "idle":
 
                 ctx.drawImage(
                     this.stand,

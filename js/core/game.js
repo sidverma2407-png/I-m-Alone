@@ -1,147 +1,134 @@
 // =========================================
-// I'M ALONE
-// Game Engine
+// CANVAS
 // =========================================
 
-// Canvas
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+canvas.width = 1280;
+canvas.height = 720;
+
 // =========================================
-// Audio
+// GAME
 // =========================================
 
-const menuMusic = document.getElementById("menuMusic");
-const clockSound = document.getElementById("clockSound");
-const rainSound = document.getElementById("rainSound");
-const windSound = document.getElementById("windSound");
-const ambientSound = document.getElementById("ambientSound");
-const thunderSound = document.getElementById("thunderSound");
+class Game {
 
-thunderSound.volume = 0.65;
+    constructor() {
 
-const introSound = document.getElementById("introSound");
-introSound.volume = 0.8;
-// Effects
+        this.lastTime = 0;
 
+        // Start from Menu
+        sceneManager.change(menuScene);
 
-// Default Volumes
-menuMusic.volume = 0.25;
-clockSound.volume = 0.18;
-rainSound.volume = 0.35;
-windSound.volume = 0.25;
-ambientSound.volume = 0.20;
-
-// Unlock audio after first user interaction
-let audioUnlocked = false;
-
-window.addEventListener("click", unlockAudio, { once: true });
-window.addEventListener("keydown", unlockAudio, { once: true });
-
-async function unlockAudio() {
-
-    if (audioUnlocked) return;
-
-    audioUnlocked = true;
-
-    try {
-
-        // Play silently once to unlock browser audio
-        menuMusic.volume = 0;
-        await menuMusic.play();
-        menuMusic.pause();
-        menuMusic.currentTime = 0;
-        menuMusic.volume = 0.25;
+        this.loop = this.loop.bind(this);
+        requestAnimationFrame(this.loop);
 
     }
 
-    catch (err) {
+    update() {
 
-        console.log("Audio unlocked.");
+        sceneManager.update();
+
+        if (typeof fadeManager !== "undefined" && fadeManager)
+            fadeManager.update();
+
+        if (typeof lightning !== "undefined" && lightning)
+            lightning.update();
+
+    }
+
+    draw() {
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        sceneManager.draw();
+
+        if (typeof lightning !== "undefined" && lightning)
+            lightning.draw();
+
+        if (typeof fadeManager !== "undefined" && fadeManager)
+            fadeManager.draw();
+
+    }
+
+    loop() {
+
+        this.update();
+        this.draw();
+
+        requestAnimationFrame(this.loop);
 
     }
 
 }
 
 // =========================================
-// Resize Canvas
+// KEYBOARD
 // =========================================
 
-function resizeCanvas() {
+window.addEventListener("keydown", (e) => {
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-}
-
-resizeCanvas();
-
-window.addEventListener("resize", resizeCanvas);
-
-// =========================================
-// Main Game Loop
-// =========================================
-
-function gameLoop() {
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    lightning.update();
-
-    sceneManager.update();
-    fadeManager.update();
-
-    cameraShake.begin();
-
-sceneManager.draw();
-lightning.draw();
-
-cameraShake.end();
-    fadeManager.draw();
-
-    cinematicBars.update();
-    cinematicBars.draw();
-
-    requestAnimationFrame(gameLoop);
-
-}
-
-// =========================================
-// Keyboard
-// =========================================
-
-window.addEventListener("keydown",(e)=>{
-
-    if(e.key==="a" || e.key==="ArrowLeft")
-        player.left=true;
-
-    if(e.key==="d" || e.key==="ArrowRight")
-        player.right=true;
-
+    // Forward key press to current scene
     sceneManager.keyDown(e);
 
+    switch (e.key.toLowerCase()) {
+
+        case "a":
+        case "arrowleft":
+
+            if (typeof player !== "undefined")
+                player.left = true;
+
+        break;
+
+        case "d":
+        case "arrowright":
+
+            if (typeof player !== "undefined")
+                player.right = true;
+
+        break;
+
+    }
+
 });
 
-   
+window.addEventListener("keyup", (e) => {
 
-
-
-window.addEventListener("keyup",(e)=>{
-
-    if(e.key==="a" || e.key==="ArrowLeft")
-        player.left=false;
-
-    if(e.key==="d" || e.key==="ArrowRight")
-        player.right=false;
-
+    // Forward key release to current scene
     sceneManager.keyUp(e);
 
+    switch (e.key.toLowerCase()) {
+
+        case "a":
+        case "arrowleft":
+
+            if (typeof player !== "undefined")
+                player.left = false;
+
+        break;
+
+        case "d":
+        case "arrowright":
+
+            if (typeof player !== "undefined")
+                player.right = false;
+
+        break;
+
+    }
+
 });
 
 // =========================================
-// Start Game
+// START GAME
 // =========================================
 
-sceneManager.change(menuScene);
+window.onload = () => {
 
-gameLoop();
+    console.log("Game Started");
+
+    new Game();
+
+};

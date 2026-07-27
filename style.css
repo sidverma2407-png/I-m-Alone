@@ -1,7 +1,6 @@
-/* ==========================================
+/* =========================================
    I'M ALONE
-   Horror Theme
-========================================== */
+   ========================================= */
 
 *{
     margin:0;
@@ -9,153 +8,34 @@
     box-sizing:border-box;
 }
 
-html,body{
+html,
+body{
 
     width:100%;
     height:100%;
+
     overflow:hidden;
 
-    background:#020202;
+    background:#000;
 
-    cursor:none;
+    display:flex;
 
-    font-family:
-        "Courier New",
-        monospace;
+    justify-content:center;
+
+    align-items:center;
+
 }
 
 /* Canvas */
 
 canvas{
 
+    image-rendering:auto;
+
     display:block;
-    width:100vw;
-    height:100vh;
 
-    background:
-    radial-gradient(
-        circle,
-        #050505 0%,
-        #020202 45%,
-        #000000 100%
-    );
+    background:#000;
 
-}
-
-/* Vignette */
-
-body::before{
-
-    content:"";
-
-    position:fixed;
-
-    left:0;
-    top:0;
-
-    width:100%;
-    height:100%;
-
-    pointer-events:none;
-
-    background:
-    radial-gradient(
-        circle,
-        transparent 30%,
-        rgba(0,0,0,.15) 55%,
-        rgba(0,0,0,.75) 100%
-    );
-
-}
-
-/* Film Grain */
-
-body::after{
-
-    content:"";
-
-    position:fixed;
-
-    left:0;
-    top:0;
-
-    width:300%;
-    height:300%;
-
-    pointer-events:none;
-
-    opacity:.035;
-
-    background-image:
-    url("https://grainy-gradients.vercel.app/noise.svg");
-
-    animation:
-    grain .3s steps(6) infinite;
-
-}
-
-/* Grain Animation */
-
-@keyframes grain{
-
-0%{
-
-transform:translate(0,0);
-
-}
-
-20%{
-
-transform:translate(-3%,-2%);
-
-}
-
-40%{
-
-transform:translate(3%,2%);
-
-}
-
-60%{
-
-transform:translate(-2%,3%);
-
-}
-
-80%{
-
-transform:translate(2%,-2%);
-
-}
-
-100%{
-
-transform:translate(0,0);
-
-}
-
-}
-
-/* Smooth Fade */
-
-.fade{
-
-animation:fade 2s ease;
-
-}
-
-@keyframes fade{
-
-0%{
-
-opacity:0;
-
-}
-
-100%{
-
-opacity:1;
-
-}
+    box-shadow:0 0 40px rgba(0,0,0,.7);
 
 }
