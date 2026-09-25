@@ -17,7 +17,7 @@ class HorrorEventManager {
     }
 
     update(delta) {
-        if (sceneManager.currentSceneName !== "bedroom") return;
+        if (sceneManager.currentSceneName !== "bedroom" && sceneManager.currentSceneName !== "mainmenu") return;
 
         const now = performance.now();
 
