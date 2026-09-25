@@ -38,6 +38,10 @@ class PlayerController {
         document.addEventListener('click', () => {
             if (sceneManager.currentSceneName === "bedroom") { // Only lock in playable scenes
                 document.body.requestPointerLock();
+                // If it was the initial hint, clear it
+                if (document.getElementById("objective-text") && document.getElementById("objective-text").innerText === "Click to explore the room.") {
+                    objectiveSystem.clearObjective();
+                }
             }
         });
     }
