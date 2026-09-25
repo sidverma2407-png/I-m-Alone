@@ -5,10 +5,11 @@ class MainMenu {
         this.camera.position.z = 5;
         
         // Background Image Plane
-        const geometry = new THREE.PlaneGeometry(16, 9); // Assuming 16:9 aspect ratio roughly
+        const geometry = new THREE.PlaneGeometry(24, 13.5); 
         const textureLoader = new THREE.TextureLoader();
         const texture = textureLoader.load('assets/images/menu-background-new.jpg');
-        const material = new THREE.MeshBasicMaterial({ map: texture, color: 0x555555 }); // Darkened a bit
+        const material = new THREE.MeshBasicMaterial({ map: texture, color: 0xffffff }); 
+
         const plane = new THREE.Mesh(geometry, material);
         plane.position.z = 0;
         this.scene.add(plane);
