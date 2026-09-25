@@ -24,14 +24,18 @@ class MainMenuUI {
         const tryPlayAudio = () => {
             audioManager.play("menu-music");
             audioManager.play("menu-tension");
-            document.removeEventListener("click", tryPlayAudio);
-            document.removeEventListener("keydown", tryPlayAudio);
+            
+            // Only remove if it actually started playing
+            if (audioManager.tracks["menu-music"] && !audioManager.tracks["menu-music"].element.paused) {
+                document.removeEventListener("click", tryPlayAudio);
+                document.removeEventListener("keydown", tryPlayAudio);
+            }
         };
         
         document.addEventListener("click", tryPlayAudio);
         document.addEventListener("keydown", tryPlayAudio);
         
-        tryPlayAudio(); // Might fail due to autoplay, but will work on interaction
+        tryPlayAudio();
     }
 
     hide() {
