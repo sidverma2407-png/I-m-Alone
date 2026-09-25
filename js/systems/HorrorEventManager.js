@@ -33,13 +33,18 @@ class HorrorEventManager {
             this.lightningFlashRemaining -= delta;
             
             // Briefly illuminate room
-            if (lightingSystem.moonLight) {
+            if (sceneManager.currentSceneName === "bedroom" && lightingSystem.moonLight) {
                 lightingSystem.moonLight.intensity = 5.0 + Math.random() * 2.0; // Bright flash
+            } else if (sceneManager.currentSceneName === "mainmenu" && mainMenuScene.lightning) {
+                mainMenuScene.lightning.intensity = 3.0 + Math.random() * 2.0; // Flash image
             }
         } else {
             // Restore normal moonlight
             if (lightingSystem.moonLight) {
                 lightingSystem.moonLight.intensity = 0.5;
+            }
+            if (mainMenuScene.lightning) {
+                mainMenuScene.lightning.intensity = 0;
             }
         }
     }
