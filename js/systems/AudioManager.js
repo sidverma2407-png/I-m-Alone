@@ -36,6 +36,13 @@ class AudioManager {
         }
     }
 
+    setTrackVolume(name, volRatio) {
+        if (this.tracks[name]) {
+            // volRatio is 0.0 to 1.0 multiplier on baseVolume
+            this.tracks[name].element.volume = (this.tracks[name].baseVolume * volRatio) * this.masterVolume;
+        }
+    }
+
     fadeOut(name, durationMs = 1000) {
         if (!this.tracks[name]) return;
         const audio = this.tracks[name].element;

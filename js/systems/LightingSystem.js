@@ -5,11 +5,11 @@ class LightingSystem {
         scene.add(ambientLight);
 
         // Window moonlight
-        const moonLight = new THREE.DirectionalLight(0x6080aa, 0.5);
-        moonLight.position.set(-5, 5, -5);
-        scene.add(moonLight);
+        this.moonLight = new THREE.DirectionalLight(0x6080aa, 0.5);
+        this.moonLight.position.set(-5, 5, -5);
+        scene.add(this.moonLight);
         
-        return { ambientLight, moonLight };
+        return { ambientLight, moonLight: this.moonLight };
     }
 }
 const lightingSystem = new LightingSystem();
