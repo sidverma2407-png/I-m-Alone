@@ -59,6 +59,8 @@ class MainMenuUI {
         const tryPlayAudio = () => {
             audioManager.play("menu-music");
             audioManager.play("menu-tension");
+            audioManager.play("clock");
+            audioManager.play("wind");
             
             // Only remove if it actually started playing
             if (audioManager.tracks["menu-music"] && !audioManager.tracks["menu-music"].element.paused) {
