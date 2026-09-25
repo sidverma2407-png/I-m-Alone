@@ -45,15 +45,7 @@ canvas {
     position: relative;
 }
 
-#main-menu::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: url('assets/images/menu-background-new.jpg') no-repeat center center;
-    background-size: cover;
-    z-index: -2;
-    animation: slowZoom 60s linear forwards;
-}
+
 
 #main-menu::after {
     content: "";
@@ -63,10 +55,7 @@ canvas {
     z-index: -1;
 }
 
-@keyframes slowZoom {
-    0% { transform: scale(1); }
-    100% { transform: scale(1.1); }
-}
+
 
 .ui-screen {
     position: absolute;
