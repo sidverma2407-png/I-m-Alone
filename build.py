@@ -62,10 +62,19 @@ with open(dist_html_path, 'w', encoding='utf-8') as f:
 print(f"Successfully created {dist_html_path}")
 
 # Copy CSS
+import shutil
+print("Copying CSS...")
 with open("style.css", 'r', encoding='utf-8') as f:
     css_content = f.read()
 with open(os.path.join(BUILD_DIR, "style.css"), 'w', encoding='utf-8') as f:
     f.write(css_content)
+
+# Copy Assets
+print("Copying assets folder...")
+dist_assets_dir = os.path.join(BUILD_DIR, "assets")
+if os.path.exists(dist_assets_dir):
+    shutil.rmtree(dist_assets_dir)
+shutil.copytree("assets", dist_assets_dir)
 
 print("\nBuild complete! The 'dist' folder contains your optimized game.")
 print("To serve it, run: python -m http.server --directory dist")
