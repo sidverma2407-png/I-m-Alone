@@ -1,194 +1,139 @@
-// =========================================
-// BEDROOM SCENE
-// =========================================
-
-class BedroomScene {
-
+class Bedroom {
     constructor() {
-
-        this.background = new Image();
-        this.background.src = "assets/images/bedroom.png";
-
-        this.sequence = 0;
-        this.timer = 0;
-
+        this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color(0x020202); // very dark
+        
+        // Let Game.js handle passing camera to PlayerController, or we can instantiate them here.
+        // It's cleaner to have global references if we're not using modules, or manage them in Game.js.
+        // We'll init player in Game.js and just pass the scene to it.
     }
 
-    start() {
-
-        console.log("Bedroom Loaded");
-
-        this.sequence = 0;
-        this.timer = 0;
-
-        // Intro Sound
-        introSound.pause();
-        introSound.currentTime = 0;
-        introSound.play().catch(err => console.log(err));
-
-        // Reset Player
-        player.x = 120;
-        player.y = 285;
-
-        player.width = 520;
-        player.height = 260;
-
-        player.state = "sleep";
-        player.control = false;
-
-        player.wakeFrame = 0;
-        player.wakeTimer = 0;
-
-        // Fade Clock Sound
-        const fadeClock = setInterval(() => {
-
-            if (clockSound.volume > 0.01) {
-
-                clockSound.volume -= 0.01;
-
-            } else {
-
-                clearInterval(fadeClock);
-
-                clockSound.pause();
-                clockSound.currentTime = 0;
-                clockSound.volume = 0.18;
-
-            }
-
-        }, 80);
-
-        interactionManager.objects = [];
-
+    init() {
+        console.log("Bedroom Init");
+        
+        // Add minimal lighting
+        lightingSystem.setupBedroomLighting(this.scene);
+        
+        // Create basic room
+        this.createRoom();
+        
+        // Start audio
+        audioManager.play("clock");
+        audioManager.play("wind");
     }
 
-    update() {
+    createRoom() {
+        // Floor
+        const floorGeo = new THREE.PlaneGeometry(10, 10);
+        const floorMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
+        const floor = new THREE.Mesh(floorGeo, floorMat);
+        floor.rotation.x = -Math.PI / 2;
+        this.scene.add(floor);
 
-        this.timer++;
+        const wallMat = new THREE.MeshStandardMaterial({ color: 0x333333 });
+        
+        // North Wall
+        const wallN = new THREE.Mesh(new THREE.BoxGeometry(10, 3, 0.5), wallMat);
+        wallN.position.set(0, 1.5, -5);
+        this.scene.add(wallN);
 
-        switch (this.sequence) {
+        // Bed
+        const bedGeo = new THREE.BoxGeometry(2, 0.5, 4);
+        const bedMat = new THREE.MeshStandardMaterial({ color: 0x551111 });
+        const bed = new THREE.Mesh(bedGeo, bedMat);
+        bed.position.set(-3, 0.25, -2);
+        this.scene.add(bed);
+        interactionSystem.add(bed, () => {
+            console.log("This is where I woke up.");
+        }, "Examine Bed");
 
-            //---------------------------------
-            // Sleep (5 seconds)
-            //---------------------------------
+        // Desk
+        const desk = new THREE.Mesh(new THREE.BoxGeometry(2, 1, 1), new THREE.MeshStandardMaterial({ color: 0x442211 }));
+        desk.position.set(3, 0.5, -4.5);
+        this.scene.add(desk);
 
-            case 0:
+        // Computer on Desk
+        const computer = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.6, 0.2), new THREE.MeshStandardMaterial({ color: 0x111111 }));
+        computer.position.set(3, 1.3, -4.5);
+        this.scene.add(computer);
+        interactionSystem.add(computer, () => {
+            console.log("Computer is off. No electricity.");
+        }, "Check Computer");
 
-                if (this.timer >= 300) {
+        // Phone on Desk
+        const phone = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.02, 0.2), new THREE.MeshStandardMaterial({ color: 0x222222 }));
+        phone.position.set(2.5, 1.01, -4.2);
+        this.scene.add(phone);
+        interactionSystem.add(phone, () => {
+            console.log("NO SIGNAL");
+        }, "Check Phone");
 
-                    lightning.flash();
+        // Diary on Desk
+        const diary = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.05, 0.3), new THREE.MeshStandardMaterial({ color: 0x775533 }));
+        diary.position.set(3.5, 1.02, -4.3);
+        this.scene.add(diary);
+        interactionSystem.add(diary, () => {
+            console.log("A diary... best not to read it all now.");
+        }, "Read Diary");
 
-                    thunderSound.currentTime = 0;
-                    thunderSound.play();
+        // Window (North Wall)
+        const windowGeo = new THREE.Mesh(new THREE.PlaneGeometry(2, 1.5), new THREE.MeshBasicMaterial({ color: 0x112233, transparent: true, opacity: 0.8 }));
+        windowGeo.position.set(0, 1.5, -4.74);
+        this.scene.add(windowGeo);
+        interactionSystem.add(windowGeo, () => {
+            console.log("Raining outside... so dark.");
+        }, "Look out Window");
 
-                    player.state = "wake";
-                    player.wakeFrame = 0;
-                    player.wakeTimer = 0;
+        // Clock on wall
+        const clock = new THREE.Mesh(new THREE.CircleGeometry(0.2, 32), new THREE.MeshStandardMaterial({ color: 0xdddddd }));
+        clock.position.set(0, 2.2, -4.74);
+        this.scene.add(clock);
+        
+        // Door (East wall, using a box for now)
+        const door = new THREE.Mesh(new THREE.BoxGeometry(0.1, 2, 1), new THREE.MeshStandardMaterial({ color: 0x332211 }));
+        door.position.set(4.9, 1, 0);
+        this.scene.add(door);
+        interactionSystem.add(door, () => {
+            console.log("The handle feels cold. Locked.");
+            horrorEventManager.trigger("door_locked");
+        }, "Open Door");
 
-                    this.sequence = 1;
+        // Light Switch
+        const switchObj = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.1, 0.1), new THREE.MeshStandardMaterial({ color: 0xdddddd }));
+        switchObj.position.set(4.9, 1.2, 1);
+        this.scene.add(switchObj);
+        interactionSystem.add(switchObj, () => {
+            console.log("Click. Nothing.");
+            audioManager.play("switch_click"); // Ensure this is loaded in AudioManager if used
+        }, "Toggle Switch");
 
-                }
+        // Wardrobe
+        const wardrobe = new THREE.Mesh(new THREE.BoxGeometry(1.5, 2.5, 1), new THREE.MeshStandardMaterial({ color: 0x442211 }));
+        wardrobe.position.set(-4.2, 1.25, 3);
+        this.scene.add(wardrobe);
+        interactionSystem.add(wardrobe, () => {
+            console.log("Just clothes... wait, did something move?");
+        }, "Open Wardrobe");
 
-            break;
-
-            //---------------------------------
-            // Wait until wake animation finishes
-            //---------------------------------
-
-            case 1:
-
-                if (player.wakeFrame >= 2) {
-
-                    fadeManager.fadeOut(() => {
-
-                          // Move Sid beside the bed
-
-    player.width = 240;
-    player.height = 400;
-
-    player.x = 560;
-    player.y = canvas.height - player.height - 40;
-
-    player.state = "stand";
-
-    this.timer = 0;
-
-    this.sequence = 2;
-
-});
-
-                    this.sequence = 99;
-
-                }
-
-            break;
-
-            //---------------------------------
-            // Waiting while fading out
-            //---------------------------------
-
-            case 99:
-
-            break;
-
-            //---------------------------------
-            // Stand for 1 second
-            //---------------------------------
-
-            case 2:
-
-                if (this.timer >= 60) {
-
-                    player.state = "idle";
-
-                    player.control = true;
-
-                    fadeManager.fadeIn();
-
-                    this.sequence = 3;
-
-                }
-
-            break;
-
-            //---------------------------------
-            // Gameplay
-            //---------------------------------
-
-            case 3:
-
-            break;
-
-        }
-
-        player.update();
-
-        interactionManager.update();
-
-        fadeManager.update();
-
+        // Mirror
+        const mirror = new THREE.Mesh(new THREE.PlaneGeometry(1, 1.5), new THREE.MeshStandardMaterial({ color: 0x8899aa, metalness: 0.9, roughness: 0.1 }));
+        mirror.position.set(-4.74, 1.5, 0);
+        mirror.rotation.y = Math.PI / 2;
+        this.scene.add(mirror);
+        interactionSystem.add(mirror, () => {
+            console.log("Just me.");
+        }, "Look in Mirror");
     }
 
-    draw() {
-
-        ctx.drawImage(
-            this.background,
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-
-        player.draw();
-
-        interactionManager.draw();
-
-        dialogueBox.draw();
-
-        fadeManager.draw();
-
+    update(delta) {
+        // Handle logic specific to bedroom (e.g. clock audio spatialization)
+        // Wait, for spatial audio we'd use THREE.PositionalAudio attached to the clock mesh, 
+        // or just calculate distance if we keep the simple AudioManager.
     }
 
+    dispose() {
+        audioManager.stop("clock");
+        audioManager.stop("wind");
+    }
 }
-
-const bedroomScene = new BedroomScene();
+const bedroomScene = new Bedroom();

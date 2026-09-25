@@ -11,78 +11,95 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Three.js (Global) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
+<!-- UI Layer -->
+<div id="ui-layer">
+    <!-- Main Menu UI -->
+    <div id="main-menu" class="ui-screen">
+        <h2 class="studio-text">SID STUDIOS</h2>
+        <h3 class="presents-text">PRESENTS</h3>
+        <h1 class="title-text">I'M ALONE</h1>
+        <h4 class="subtitle-text">Psychological Horror Experience</h4>
+        
+        <div class="menu-options">
+            <div class="menu-option active" data-action="newgame">NEW GAME</div>
+            <div class="menu-option disabled" data-action="continue">CONTINUE</div>
+            <div class="menu-option" data-action="settings">SETTINGS</div>
+            <div class="menu-option" data-action="quit">QUIT</div>
+        </div>
+        
+        <div class="menu-footer-left">HEADPHONES RECOMMENDED</div>
+        <div class="menu-footer-right">v0.2 3D Alpha</div>
+    </div>
+
+    <!-- Intro Text -->
+    <div id="intro-screen" class="ui-screen hidden">
+        <div id="intro-text-container"></div>
+    </div>
+
+    <!-- HUD -->
+    <div id="hud" class="ui-screen hidden">
+        <div id="crosshair"></div>
+        <div id="interaction-prompt" class="hidden">[E] Interact</div>
+        <div id="objective-container" class="hidden">
+            <span id="objective-text"></span>
+        </div>
+    </div>
+
+    <!-- Pause / Settings -->
+    <div id="pause-menu" class="ui-screen hidden">
+        <h1 class="title-text">PAUSED</h1>
+        <div class="menu-options">
+            <div class="menu-option" data-action="resume">RESUME</div>
+            <div class="menu-option" data-action="settings">SETTINGS</div>
+            <div class="menu-option" data-action="save">SAVE</div>
+            <div class="menu-option" data-action="quit">QUIT TO MENU</div>
+        </div>
+    </div>
+    
+    <div id="settings-menu" class="ui-screen hidden">
+        <h1 class="title-text">SETTINGS</h1>
+        <div class="settings-options">
+            <label>Master Volume: <input type="range" id="master-vol" min="0" max="1" step="0.01" value="1"></label><br>
+            <label>Mouse Sensitivity: <input type="range" id="mouse-sens" min="0.1" max="5" step="0.1" value="1"></label>
+        </div>
+        <div class="menu-options" style="margin-top: 40px;">
+            <div class="menu-option" data-action="back">BACK</div>
+        </div>
+    </div>
+</div>
+
+<!-- 3D Canvas -->
 <canvas id="gameCanvas"></canvas>
 
-<!-- AUDIO -->
+<!-- Scripts -->
+<script src="js/systems/AudioManager.js"></script>
+<script src="js/systems/InteractionSystem.js"></script>
+<script src="js/systems/HorrorEventManager.js"></script>
+<script src="js/systems/ObjectiveSystem.js"></script>
+<script src="js/systems/InventorySystem.js"></script>
+<script src="js/systems/SaveSystem.js"></script>
+<script src="js/systems/LightingSystem.js"></script>
 
-<audio id="menuMusic" loop>
-    <source src="assets/audio/menu-music.mp3" type="audio/mpeg">
-</audio>
+<script src="js/ui/MainMenuUI.js"></script>
+<script src="js/ui/InteractionPrompt.js"></script>
+<script src="js/ui/PauseUI.js"></script>
+<script src="js/ui/SettingsUI.js"></script>
 
-<audio id="clockSound" loop>
-    <source src="assets/audio/clock-ticking.mp3.mp3" type="audio/mpeg">
-</audio>
+<script src="js/player/FirstPersonCamera.js"></script>
+<script src="js/player/PlayerController.js"></script>
 
-<audio id="windSound" loop>
-    <source src="assets/audio/wind.mp3" type="audio/mpeg">
-</audio>
+<script src="js/scenes/MainMenu.js"></script>
+<script src="js/scenes/Intro.js"></script>
+<script src="js/scenes/Bedroom.js"></script>
 
-<audio id="rainSound" loop>
-    <source src="assets/audio/rain.mp3" type="audio/mpeg">
-</audio>
-
-<audio id="ambientSound" loop>
-    <source src="assets/audio/ambient.mp3" type="audio/mpeg">
-</audio>
-
-<audio id="thunderSound">
-    <source src="assets/audio/thunder.mp3" type="audio/mpeg">
-</audio>
-
-<audio id="introSound">
-    <source src="assets/audio/intro.mp3" type="audio/mpeg">
-</audio>
-
-<script>
-const menuMusic = document.getElementById("menuMusic");
-const clockSound = document.getElementById("clockSound");
-const windSound = document.getElementById("windSound");
-const rainSound = document.getElementById("rainSound");
-const ambientSound = document.getElementById("ambientSound");
-const thunderSound = document.getElementById("thunderSound");
-const introSound = document.getElementById("introSound");
-</script>
-
-<!-- CORE -->
-<script src="js/core/sceneManager.js"></script>
-<script src="js/core/fadeManager.js"></script>
-
-<!-- EFFECTS -->
-<script src="js/effects/cinematicBars.js"></script>
-<script src="js/effects/cameraShake.js"></script>
-<script src="js/effects/lightning.js"></script>
-
-<!-- SCENES -->
-<script src="js/scenes/menu.js"></script>
-<script src="js/scenes/intro.js"></script>
-<script src="js/scenes/bedroom.js"></script>
-<script src="js/scenes/house.js"></script>
-
-<!-- ENTITIES -->
-<script src="js/entities/spriteAnimator.js"></script>
-
-<script src="js/entities/player.js"></script>
-
-<!-- SYSTEMS -->
-<script src="js/systems/dialogueBox.js"></script>
-<script src="js/systems/interactionManager.js"></script>
-<script src="js/systems/objectiveManager.js"></script>
-
-<!-- GAME -->
-<script src="js/core/game.js"></script>
+<script src="js/core/SceneManager.js"></script>
+<script src="js/core/Game.js"></script>
 
 </body>
 </html>

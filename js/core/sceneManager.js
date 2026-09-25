@@ -1,62 +1,31 @@
-// =========================================
-// I'M ALONE
-// Scene Manager
-// =========================================
-
 class SceneManager {
-
     constructor() {
-
+        this.scenes = {
+            "mainmenu": mainMenuScene,
+            "intro": introScene,
+            "bedroom": bedroomScene
+        };
+        this.currentSceneName = null;
         this.currentScene = null;
-
     }
 
-    change(scene) {
-
-        if (this.currentScene && this.currentScene.end) {
-            this.currentScene.end();
+    changeScene(name) {
+        if (this.currentScene) {
+            this.currentScene.dispose();
         }
-
-        this.currentScene = scene;
-
-        if (this.currentScene && this.currentScene.start) {
-            this.currentScene.start();
+        
+        this.currentSceneName = name;
+        this.currentScene = this.scenes[name];
+        
+        if (this.currentScene) {
+            this.currentScene.init();
         }
-
     }
 
-    update() {
-
-        if (this.currentScene && this.currentScene.update) {
-            this.currentScene.update();
+    update(delta) {
+        if (this.currentScene) {
+            this.currentScene.update(delta);
         }
-
     }
-
-    draw() {
-
-        if (this.currentScene && this.currentScene.draw) {
-            this.currentScene.draw();
-        }
-
-    }
-
-    keyDown(event) {
-
-        if (this.currentScene && this.currentScene.keyDown) {
-            this.currentScene.keyDown(event);
-        }
-
-    }
-
-    keyUp(event) {
-
-        if (this.currentScene && this.currentScene.keyUp) {
-            this.currentScene.keyUp(event);
-        }
-
-    }
-
 }
-
 const sceneManager = new SceneManager();

@@ -1,134 +1,53 @@
-// =========================================
-// CANVAS
-// =========================================
-
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
-
-canvas.width = 1280;
-canvas.height = 720;
-
-// =========================================
-// GAME
-// =========================================
-
 class Game {
-
     constructor() {
+        this.canvas = document.getElementById("gameCanvas");
+        this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.shadowMap.enabled = true;
+        
+        this.clock = new THREE.Clock();
+        
+        // Initialize Player for the game (global)
+        this.cameraSys = new FirstPersonCamera(bedroomScene.scene); // Pass bedroom scene for now
+        this.player = new PlayerController(bedroomScene.scene, this.cameraSys);
+        
+        window.addEventListener('resize', () => this.onWindowResize(), false);
 
-        this.lastTime = 0;
-
-        // Start from Menu
-        sceneManager.change(menuScene);
-
+        // Start game at Main Menu
+        sceneManager.changeScene("mainmenu");
+        
         this.loop = this.loop.bind(this);
         requestAnimationFrame(this.loop);
-
     }
 
-    update() {
-
-        sceneManager.update();
-
-        if (typeof fadeManager !== "undefined" && fadeManager)
-            fadeManager.update();
-
-        if (typeof lightning !== "undefined" && lightning)
-            lightning.update();
-
-    }
-
-    draw() {
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        sceneManager.draw();
-
-        if (typeof lightning !== "undefined" && lightning)
-            lightning.draw();
-
-        if (typeof fadeManager !== "undefined" && fadeManager)
-            fadeManager.draw();
-
+    onWindowResize() {
+        this.cameraSys.camera.aspect = window.innerWidth / window.innerHeight;
+        this.cameraSys.camera.updateProjectionMatrix();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
     loop() {
-
-        this.update();
-        this.draw();
-
         requestAnimationFrame(this.loop);
-
+        
+        const delta = this.clock.getDelta();
+        
+        sceneManager.update(delta);
+        this.player.update(delta);
+        
+        if (sceneManager.currentScene) {
+            let camToRender = this.cameraSys.camera;
+            if (sceneManager.currentSceneName === "mainmenu") {
+                camToRender = mainMenuScene.camera;
+            } else if (sceneManager.currentSceneName === "intro") {
+                camToRender = introScene.camera;
+            }
+            this.renderer.render(sceneManager.currentScene.scene, camToRender);
+        }
     }
-
 }
 
-// =========================================
-// KEYBOARD
-// =========================================
-
-window.addEventListener("keydown", (e) => {
-
-    // Forward key press to current scene
-    sceneManager.keyDown(e);
-
-    switch (e.key.toLowerCase()) {
-
-        case "a":
-        case "arrowleft":
-
-            if (typeof player !== "undefined")
-                player.left = true;
-
-        break;
-
-        case "d":
-        case "arrowright":
-
-            if (typeof player !== "undefined")
-                player.right = true;
-
-        break;
-
-    }
-
-});
-
-window.addEventListener("keyup", (e) => {
-
-    // Forward key release to current scene
-    sceneManager.keyUp(e);
-
-    switch (e.key.toLowerCase()) {
-
-        case "a":
-        case "arrowleft":
-
-            if (typeof player !== "undefined")
-                player.left = false;
-
-        break;
-
-        case "d":
-        case "arrowright":
-
-            if (typeof player !== "undefined")
-                player.right = false;
-
-        break;
-
-    }
-
-});
-
-// =========================================
-// START GAME
-// =========================================
-
 window.onload = () => {
-
-    console.log("Game Started");
-
+    console.log("3D Game Started");
     new Game();
-
 };

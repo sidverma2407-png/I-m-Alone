@@ -1,41 +1,144 @@
 /* =========================================
-   I'M ALONE
+   I'M ALONE - 3D VERSION
    ========================================= */
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
 }
 
-html,
-body{
-
-    width:100%;
-    height:100%;
-
-    overflow:hidden;
-
-    background:#000;
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    font-family: 'Cinzel', serif;
+    color: #fff;
 }
 
-/* Canvas */
-
-canvas{
-
-    image-rendering:auto;
-
-    display:block;
-
-    background:#000;
-
-    box-shadow:0 0 40px rgba(0,0,0,.7);
-
+/* 3D Canvas */
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    z-index: 1;
 }
+
+/* UI Layer */
+#ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    pointer-events: none; /* Let clicks pass through unless specified */
+}
+
+.ui-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 1s ease;
+}
+
+.hidden {
+    opacity: 0;
+    pointer-events: none !important;
+}
+
+/* Main Menu Typography */
+.studio-text { color: #d0d0d0; font-size: 24px; font-weight: 400; margin-bottom: 5px; text-shadow: 0 0 10px #000; }
+.presents-text { color: #888; font-size: 18px; font-weight: 400; margin-bottom: 60px; }
+.title-text { color: #fff; font-size: 84px; font-weight: 900; text-shadow: 0 0 20px #fff; margin-bottom: 10px; }
+.subtitle-text { color: #999; font-size: 24px; font-weight: 400; margin-bottom: 60px; }
+
+/* Menu Options */
+.menu-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    pointer-events: auto;
+}
+
+.menu-option {
+    font-size: 22px;
+    color: #888;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.menu-option:hover, .menu-option.active {
+    color: #fff;
+    text-shadow: 0 0 10px #fff;
+}
+
+.menu-option.disabled {
+    color: #444;
+    cursor: not-allowed;
+}
+
+/* Menu Footer */
+.menu-footer-left { position: absolute; bottom: 30px; left: 30px; color: #777; font-size: 15px; }
+.menu-footer-right { position: absolute; bottom: 30px; right: 30px; color: #777; font-size: 15px; }
+
+/* HUD */
+#crosshair {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#interaction-prompt {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    font-size: 18px;
+    color: #fff;
+    text-shadow: 0 0 5px #000;
+}
+
+/* Intro Screen */
+#intro-screen {
+    background: #000;
+}
+
+#intro-text-container {
+    font-size: 32px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 2s ease;
+}
+
+/* Pause & Settings Menu background */
+#pause-menu, #settings-menu {
+    background: rgba(0,0,0,0.85);
+    pointer-events: auto;
+}
+
+.settings-options {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    font-size: 20px;
+    color: #bbb;
+}
+input[type=range] { vertical-align: middle; }
