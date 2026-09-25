@@ -61,7 +61,25 @@ canvas {
 /* Main Menu Typography */
 .studio-text { color: #d0d0d0; font-size: 24px; font-weight: 400; margin-bottom: 5px; text-shadow: 0 0 10px #000; }
 .presents-text { color: #888; font-size: 18px; font-weight: 400; margin-bottom: 60px; }
-.title-text { color: #fff; font-size: 84px; font-weight: 900; text-shadow: 0 0 20px #fff; margin-bottom: 10px; }
+.title-text { 
+    color: #fff; 
+    font-size: 84px; 
+    font-weight: 900; 
+    text-shadow: 0 0 20px #fff; 
+    margin-bottom: 10px; 
+    animation: flicker 4s infinite;
+}
+
+@keyframes flicker {
+    0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+        text-shadow: 0 0 20px #fff;
+    }
+    20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.4;
+        text-shadow: none;
+    }
+}
 .subtitle-text { color: #999; font-size: 24px; font-weight: 400; margin-bottom: 60px; }
 
 /* Menu Options */
