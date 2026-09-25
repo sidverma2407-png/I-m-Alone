@@ -45,6 +45,8 @@ class Intro {
                 // Done intro
                 this.uiElement.classList.add("hidden");
                 sceneManager.changeScene("bedroom");
+                // Inform user to click
+                objectiveSystem.setObjective("Click to explore the room.");
             }
             this.timer = 0;
         }

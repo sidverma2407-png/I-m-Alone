@@ -3,23 +3,20 @@ class Bedroom {
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color(0x020202); // very dark
         
-        // Let Game.js handle passing camera to PlayerController, or we can instantiate them here.
-        // It's cleaner to have global references if we're not using modules, or manage them in Game.js.
-        // We'll init player in Game.js and just pass the scene to it.
-    }
-
-    init() {
-        console.log("Bedroom Init");
-        
         // Add minimal lighting
         lightingSystem.setupBedroomLighting(this.scene);
         
         // Create basic room
         this.createRoom();
+    }
+
+    init() {
+        console.log("Bedroom Init");
         
-        // Start audio
+        // Start bedroom audio
         audioManager.play("clock");
-        audioManager.play("wind");
+        // Ensure rain is softer in bedroom
+        audioManager.setTrackVolume("rain", 0.6); // 60% of base volume
     }
 
     createRoom() {
@@ -138,20 +135,11 @@ class Bedroom {
             if(clockVol < 0) clockVol = 0;
             if(clockVol > 1) clockVol = 1;
             audioManager.setTrackVolume("clock", clockVol);
-
-            // Wind spatialization (near window)
-            const windowPos = new THREE.Vector3(0, 1.5, -4.74);
-            const distToWindow = playerPos.distanceTo(windowPos);
-            let windVol = 1.0 - ((distToWindow - 1) / 10);
-            if(windVol < 0) windVol = 0;
-            if(windVol > 1) windVol = 1;
-            audioManager.setTrackVolume("wind", windVol);
         }
     }
 
     dispose() {
         audioManager.stop("clock");
-        audioManager.stop("wind");
     }
 }
 const bedroomScene = new Bedroom();

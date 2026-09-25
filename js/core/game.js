@@ -16,8 +16,6 @@ class Game {
         
         window.addEventListener('resize', () => this.onWindowResize(), false);
 
-        // Initialize bedroom meshes so they are visible in main menu background
-        bedroomScene.init();
 
         // Start game at Main Menu
         sceneManager.changeScene("mainmenu");

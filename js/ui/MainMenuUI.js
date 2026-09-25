@@ -57,15 +57,17 @@ class MainMenuUI {
         this.element.classList.remove("hidden");
         
         const tryPlayAudio = () => {
-            audioManager.play("menu-music");
-            audioManager.play("menu-tension");
-            audioManager.play("clock");
-            audioManager.play("wind");
+            // Only try if audio context allows it
+            audioManager.play("rain");
+            audioManager.tracks["rain"].element.volume = 0; // prepare for fade
             
-            // Only remove if it actually started playing
-            if (audioManager.tracks["menu-music"] && !audioManager.tracks["menu-music"].element.paused) {
+            if (audioManager.tracks["rain"] && !audioManager.tracks["rain"].element.paused) {
                 document.removeEventListener("click", tryPlayAudio);
                 document.removeEventListener("keydown", tryPlayAudio);
+                
+                audioManager.fadeIn("rain", 700);
+                setTimeout(() => audioManager.fadeIn("menu-music", 1000), 200);
+                setTimeout(() => audioManager.fadeIn("menu-tension", 1000), 700);
             }
         };
         

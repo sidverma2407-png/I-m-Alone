@@ -4,9 +4,23 @@ class HorrorEventManager {
         this.lightningFlashRemaining = 0;
     }
 
-    getRandomThunderTime() {
-        // Next thunder between 15 and 45 seconds from now
-        return performance.now() + (15000 + Math.random() * 30000);
+    getRandomThunderTime(sceneName) {
+        let baseDelay = 15000;
+        let randomAdd = 30000;
+        
+        if (sceneName === "mainmenu") {
+            baseDelay = 8000;
+            randomAdd = 17000; // 8-25 seconds
+        } else if (sceneName === "bedroom") {
+            baseDelay = 10000;
+            randomAdd = 25000; // 10-35 seconds
+            // Occasionally much longer
+            if (Math.random() > 0.7) {
+                randomAdd += 20000;
+            }
+        }
+        
+        return performance.now() + (baseDelay + Math.random() * randomAdd);
     }
 
     trigger(eventName) {
@@ -25,7 +39,7 @@ class HorrorEventManager {
         if (now > this.nextThunderTime) {
             audioManager.play("thunder");
             this.lightningFlashRemaining = 0.2; // Flash for 200ms
-            this.nextThunderTime = this.getRandomThunderTime();
+            this.nextThunderTime = this.getRandomThunderTime(sceneManager.currentSceneName);
         }
 
         // Handle Lightning flash effect on Bedroom lighting

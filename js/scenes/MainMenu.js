@@ -23,9 +23,6 @@ class MainMenu {
     init() {
         console.log("Main Menu Init");
         mainMenuUI.show();
-        // Also play background audio
-        audioManager.play("clock");
-        audioManager.play("wind");
     }
     update(delta) {
         // Slow zoom effect
