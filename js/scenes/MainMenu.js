@@ -4,15 +4,6 @@ class MainMenu {
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.camera.position.z = 5;
         
-        // Background Image Plane
-        const geometry = new THREE.PlaneGeometry(24, 13.5); 
-        const textureLoader = new THREE.TextureLoader();
-        const texture = textureLoader.load('assets/images/menu-background-new.jpg');
-        const material = new THREE.MeshBasicMaterial({ map: texture, color: 0xffffff }); 
-
-        const plane = new THREE.Mesh(geometry, material);
-        plane.position.z = 0;
-        this.scene.add(plane);
     }
     init() {
         console.log("Main Menu Init");

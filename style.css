@@ -40,6 +40,25 @@ canvas {
     pointer-events: none; /* Let clicks pass through unless specified */
 }
 
+#main-menu {
+    overflow: hidden;
+}
+
+#main-menu::before {
+    content: "";
+    position: absolute;
+    top: -10%; left: -10%; right: -10%; bottom: -10%;
+    background: url('assets/images/menu-background-new.jpg') no-repeat center center;
+    background-size: cover;
+    z-index: -1;
+    animation: slowZoom 60s linear forwards;
+}
+
+@keyframes slowZoom {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.15); }
+}
+
 .ui-screen {
     position: absolute;
     top: 0;
