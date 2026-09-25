@@ -22,8 +22,26 @@ class Game {
     }
 
     onWindowResize() {
-        this.cameraSys.camera.aspect = window.innerWidth / window.innerHeight;
+        const aspect = window.innerWidth / window.innerHeight;
+        
+        // Update first person camera
+        this.cameraSys.camera.aspect = aspect;
         this.cameraSys.camera.updateProjectionMatrix();
+        
+        // Update main menu camera
+        mainMenuScene.camera.aspect = aspect;
+        mainMenuScene.camera.updateProjectionMatrix();
+        
+        // Adjust plane size in main menu to fit new aspect
+        if (mainMenuScene.plane) {
+            const distance = 5;
+            const vFov = mainMenuScene.camera.fov * Math.PI / 180;
+            const planeHeight = 2 * Math.tan(vFov / 2) * distance;
+            const planeWidth = planeHeight * aspect;
+            mainMenuScene.plane.geometry.dispose();
+            mainMenuScene.plane.geometry = new THREE.PlaneGeometry(planeWidth, planeHeight);
+        }
+
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
@@ -34,6 +52,7 @@ class Game {
         
         sceneManager.update(delta);
         this.player.update(delta);
+        horrorEventManager.update(delta);
         
         if (sceneManager.currentScene) {
             let camToRender = this.cameraSys.camera;
@@ -49,5 +68,5 @@ class Game {
 
 window.onload = () => {
     console.log("3D Game Started");
-    new Game();
+    window.game = new Game();
 };

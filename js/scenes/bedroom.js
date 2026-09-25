@@ -126,9 +126,27 @@ class Bedroom {
     }
 
     update(delta) {
-        // Handle logic specific to bedroom (e.g. clock audio spatialization)
-        // Wait, for spatial audio we'd use THREE.PositionalAudio attached to the clock mesh, 
-        // or just calculate distance if we keep the simple AudioManager.
+        // We need player position. If game object is globally available:
+        if (typeof game !== "undefined" && game.cameraSys) {
+            const playerPos = game.cameraSys.camera.position;
+            
+            // Clock spatialization
+            const clockPos = new THREE.Vector3(0, 2.2, -4.74);
+            const distToClock = playerPos.distanceTo(clockPos);
+            // Full volume at 1m, 0 at 8m
+            let clockVol = 1.0 - ((distToClock - 1) / 7);
+            if(clockVol < 0) clockVol = 0;
+            if(clockVol > 1) clockVol = 1;
+            audioManager.setTrackVolume("clock", clockVol);
+
+            // Wind spatialization (near window)
+            const windowPos = new THREE.Vector3(0, 1.5, -4.74);
+            const distToWindow = playerPos.distanceTo(windowPos);
+            let windVol = 1.0 - ((distToWindow - 1) / 10);
+            if(windVol < 0) windVol = 0;
+            if(windVol > 1) windVol = 1;
+            audioManager.setTrackVolume("wind", windVol);
+        }
     }
 
     dispose() {
