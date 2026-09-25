@@ -42,21 +42,30 @@ canvas {
 
 #main-menu {
     overflow: hidden;
+    position: relative;
 }
 
 #main-menu::before {
     content: "";
     position: absolute;
-    top: -10%; left: -10%; right: -10%; bottom: -10%;
+    top: 0; left: 0; right: 0; bottom: 0;
     background: url('assets/images/menu-background-new.jpg') no-repeat center center;
     background-size: cover;
-    z-index: -1;
+    z-index: -2;
     animation: slowZoom 60s linear forwards;
+}
+
+#main-menu::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 80%, rgba(0,0,0,0.95) 100%);
+    z-index: -1;
 }
 
 @keyframes slowZoom {
     0% { transform: scale(1); }
-    100% { transform: scale(1.15); }
+    100% { transform: scale(1.1); }
 }
 
 .ui-screen {
