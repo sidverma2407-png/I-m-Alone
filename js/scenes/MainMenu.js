@@ -13,21 +13,12 @@ class MainMenu {
         const textureLoader = new THREE.TextureLoader();
         const texture = textureLoader.load('assets/images/menu-background-new.jpg');
         
-        // Use standard material so we can flash it with lightning
-        const material = new THREE.MeshStandardMaterial({ map: texture, color: 0x888888, roughness: 1 });
+        // Use basic material for reliable rendering. We will simulate lightning by changing its color!
+        const material = new THREE.MeshBasicMaterial({ map: texture, color: 0x888888 });
 
         this.plane = new THREE.Mesh(geometry, material);
         this.plane.position.z = 0;
         this.scene.add(this.plane);
-        
-        // Ambient light for normal visibility
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
-        this.scene.add(ambientLight);
-        
-        // Lightning flash light
-        this.lightning = new THREE.DirectionalLight(0xaaccff, 0);
-        this.lightning.position.set(-5, 5, 5);
-        this.scene.add(this.lightning);
     }
     init() {
         console.log("Main Menu Init");

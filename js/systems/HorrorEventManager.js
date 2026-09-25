@@ -35,16 +35,18 @@ class HorrorEventManager {
             // Briefly illuminate room
             if (sceneManager.currentSceneName === "bedroom" && lightingSystem.moonLight) {
                 lightingSystem.moonLight.intensity = 5.0 + Math.random() * 2.0; // Bright flash
-            } else if (sceneManager.currentSceneName === "mainmenu" && mainMenuScene.lightning) {
-                mainMenuScene.lightning.intensity = 3.0 + Math.random() * 2.0; // Flash image
+            } else if (sceneManager.currentSceneName === "mainmenu" && mainMenuScene.plane) {
+                // Flash image white
+                mainMenuScene.plane.material.color.setHex(0xffffff);
             }
         } else {
             // Restore normal moonlight
             if (lightingSystem.moonLight) {
                 lightingSystem.moonLight.intensity = 0.5;
             }
-            if (mainMenuScene.lightning) {
-                mainMenuScene.lightning.intensity = 0;
+            if (mainMenuScene.plane) {
+                // Restore dark gray
+                mainMenuScene.plane.material.color.setHex(0x888888);
             }
         }
     }
