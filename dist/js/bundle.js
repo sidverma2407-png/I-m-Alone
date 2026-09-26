@@ -1489,16 +1489,16 @@ class Bedroom {
     }
 
     createRoom() {
-        // High-Quality Procedural Textures
-        const woodTex = this.generateProceduralTexture('wood', '#3a2415', 512, 512);
-        const wallTex = this.generateProceduralTexture('wall', '#7a7d80', 512, 512); // Gray/Off-white walls
-        const fabricTex = this.generateProceduralTexture('fabric', '#2d3238', 256, 256);
-        const blanketTex = this.generateProceduralTexture('fabric', '#424855', 256, 256);
-        const floorTex = this.generateProceduralTexture('wood', '#1e1611', 1024, 1024);
+        // High-Quality Procedural Textures (Optimized)
+        const woodTex = this.generateProceduralTexture('wood', '#3a2415', 256, 256);
+        const wallTex = this.generateProceduralTexture('wall', '#7a7d80', 256, 256); // Gray/Off-white walls
+        const fabricTex = this.generateProceduralTexture('fabric', '#2d3238', 128, 128);
+        const blanketTex = this.generateProceduralTexture('fabric', '#424855', 128, 128);
+        const floorTex = this.generateProceduralTexture('wood', '#1e1611', 512, 512); // Reduced from 1024
         floorTex.repeat.set(8, 8); // Better scaling for 10x10 floor
-        const paperTex = this.generateProceduralTexture('noise', '#eeeeee', 128, 128);
-        const paintingCanvasTex = this.generateProceduralTexture('noise', '#111111', 256, 256);
-        const glassTex = this.generateProceduralTexture('noise', '#aaaacc', 128, 128);
+        const paperTex = this.generateProceduralTexture('noise', '#eeeeee', 64, 64);
+        const paintingCanvasTex = this.generateProceduralTexture('noise', '#111111', 128, 128);
+        const glassTex = this.generateProceduralTexture('noise', '#aaaacc', 64, 64);
 
         // Advanced Materials
         const floorMat = new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.6, bumpMap: floorTex, bumpScale: 0.015, metalness: 0.1 });
@@ -1567,7 +1567,7 @@ class Bedroom {
         this.colliders = [wallN_L, wallN_R, wallN_B, wallN_T, wallS, wallE, wallW];
 
         // Rain Outside Window
-        const rainTex = this.generateProceduralTexture('noise', '#000000', 512, 512);
+        const rainTex = this.generateProceduralTexture('noise', '#000000', 256, 256);
         rainTex.repeat.set(2, 4);
         const rainMat = new THREE.MeshBasicMaterial({ map: rainTex, transparent: true, opacity: 0.6, color: 0x5588aa });
         this.rainPlane = new THREE.Mesh(new THREE.PlaneGeometry(8, 6), rainMat);
@@ -1579,8 +1579,9 @@ class Bedroom {
         moonlight.position.set(0, 4, -10); // High up outside window
         moonlight.target.position.set(0, 0, 0);
         moonlight.castShadow = true;
-        moonlight.shadow.mapSize.width = 2048;
-        moonlight.shadow.mapSize.height = 2048;
+        // Optimized Shadow Map Size
+        moonlight.shadow.mapSize.width = 1024;
+        moonlight.shadow.mapSize.height = 1024;
         moonlight.shadow.camera.near = 0.5;
         moonlight.shadow.camera.far = 25;
         moonlight.shadow.camera.left = -5;
@@ -1722,7 +1723,7 @@ class Bedroom {
         const phone = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.01, 0.15), blackMat);
         phone.position.set(-1.9, 0.615, 3.9);
         phone.rotation.y = 0.3;
-        phone.castShadow = true;
+        // Optimized: Removed minor castShadow
         this.scene.add(phone);
         interactionSystem.add(phone, () => {
             showSubtitle("3:14 AM. NO SIGNAL. BATTERY LOW.");
@@ -1734,7 +1735,6 @@ class Bedroom {
         const laptop = new THREE.Mesh(laptopGeo, metalMat);
         laptop.position.set(3.9, 0.81, -2.0);
         laptop.rotation.y = 0.1;
-        laptop.castShadow = true;
         this.scene.add(laptop);
         interactionSystem.add(laptop, () => {
             showSubtitle("Dead battery.");
@@ -1743,7 +1743,6 @@ class Bedroom {
         const diary = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.03, 0.15), new THREE.MeshStandardMaterial({ color: 0x5a2a2a, roughness: 0.9 }));
         diary.position.set(4.2, 0.815, -2.3);
         diary.rotation.y = -0.15;
-        diary.castShadow = true;
         this.scene.add(diary);
         interactionSystem.add(diary, () => {
             showSubtitle("My internship notes.");
@@ -1770,18 +1769,15 @@ class Bedroom {
         // 12. Clothes
         const clothes = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.08, 0.35), new THREE.MeshStandardMaterial({ color: 0x552222, roughness: 1.0 }));
         clothes.position.set(3.0, 0.55, -2.0); // on chair seat
-        clothes.castShadow = true;
         this.scene.add(clothes);
 
         // 13. Shoes
         const shoe1 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.25), blackMat);
         shoe1.position.set(-2.0, 0.05, 2.5);
-        shoe1.castShadow = true;
         this.scene.add(shoe1);
         const shoe2 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.25), blackMat);
         shoe2.position.set(-1.8, 0.05, 2.6);
         shoe2.rotation.y = 0.2;
-        shoe2.castShadow = true;
         this.scene.add(shoe2);
 
         // 14. Bedroom Door (South wall)
@@ -1863,9 +1859,10 @@ class Bedroom {
 
         if (this.dustParticles) {
             const positions = this.dustParticles.geometry.attributes.position.array;
+            const time = performance.now() * 0.001; // calculate once
             for(let i = 0; i < positions.length; i+=3) {
                 positions[i+1] -= delta * 0.1; // Fall slowly
-                positions[i] += Math.sin(Date.now() * 0.001 + i) * delta * 0.1; // Drift sideways
+                positions[i] += Math.sin(time + i) * delta * 0.1; // Drift sideways
                 if (positions[i+1] < 0) {
                     positions[i+1] = 3.5;
                 }
@@ -1921,8 +1918,8 @@ class Game {
         this.canvas = document.getElementById("gameCanvas");
         this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true, powerPreference: "high-performance" });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        // Cap pixel ratio to 2 to prevent extreme performance drops on 4K/retina displays
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        // Cap pixel ratio to 1.5 to prevent extreme performance drops on 4K/retina displays
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Better looking, optimized shadows
         this.renderer.outputEncoding = THREE.sRGBEncoding;

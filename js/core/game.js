@@ -3,8 +3,8 @@ class Game {
         this.canvas = document.getElementById("gameCanvas");
         this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true, powerPreference: "high-performance" });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        // Cap pixel ratio to 2 to prevent extreme performance drops on 4K/retina displays
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        // Cap pixel ratio to 1.5 to prevent extreme performance drops on 4K/retina displays
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Better looking, optimized shadows
         this.renderer.outputEncoding = THREE.sRGBEncoding;
