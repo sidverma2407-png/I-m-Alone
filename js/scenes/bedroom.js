@@ -455,11 +455,11 @@ class Bedroom {
             audioManager.play("rattle"); 
         }, "Bedroom Door");
 
-        // 15. Water Bottle (Nightstand)
-        const bottleGeo = new THREE.CylinderGeometry(0.035, 0.035, 0.2, 16);
+        // 15. Water Bottle (Nightstand) - Increased size slightly for easier clicking
+        const bottleGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.25, 16);
         const bottleMat = new THREE.MeshStandardMaterial({ color: 0x88ccff, transparent: true, opacity: 0.4, roughness: 0.1, metalness: 0.8 });
         const waterBottle = new THREE.Mesh(bottleGeo, bottleMat);
-        waterBottle.position.set(-2.1, 0.72, 4.1);
+        waterBottle.position.set(-2.1, 0.73, 4.1);
         waterBottle.castShadow = true;
         this.scene.add(waterBottle);
         interactionSystem.add(waterBottle, () => {

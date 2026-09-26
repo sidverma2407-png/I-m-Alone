@@ -391,6 +391,20 @@ class LightingSystem {
         // Window moonlight
         this.moonLight = new THREE.DirectionalLight(0x6080aa, 0.5);
         this.moonLight.position.set(-5, 5, -5);
+        
+        // CRITICAL FOR FURNITURE GROUNDING
+        this.moonLight.castShadow = true;
+        this.moonLight.shadow.mapSize.width = 2048;
+        this.moonLight.shadow.mapSize.height = 2048;
+        this.moonLight.shadow.camera.near = 0.5;
+        this.moonLight.shadow.camera.far = 25;
+        // The room is roughly 10x10, so make the orthographic camera cover it
+        this.moonLight.shadow.camera.left = -7;
+        this.moonLight.shadow.camera.right = 7;
+        this.moonLight.shadow.camera.top = 7;
+        this.moonLight.shadow.camera.bottom = -7;
+        this.moonLight.shadow.bias = -0.0005; // Prevent shadow acne
+
         scene.add(this.moonLight);
         
         return { ambientLight, moonLight: this.moonLight };
@@ -1882,11 +1896,11 @@ class Bedroom {
             audioManager.play("rattle"); 
         }, "Bedroom Door");
 
-        // 15. Water Bottle (Nightstand)
-        const bottleGeo = new THREE.CylinderGeometry(0.035, 0.035, 0.2, 16);
+        // 15. Water Bottle (Nightstand) - Increased size slightly for easier clicking
+        const bottleGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.25, 16);
         const bottleMat = new THREE.MeshStandardMaterial({ color: 0x88ccff, transparent: true, opacity: 0.4, roughness: 0.1, metalness: 0.8 });
         const waterBottle = new THREE.Mesh(bottleGeo, bottleMat);
-        waterBottle.position.set(-2.1, 0.72, 4.1);
+        waterBottle.position.set(-2.1, 0.73, 4.1);
         waterBottle.castShadow = true;
         this.scene.add(waterBottle);
         interactionSystem.add(waterBottle, () => {
