@@ -45,48 +45,64 @@ class Intro {
         
         const t = this.totalTime + 1.5; 
         
-        // Fast, punchy timeline
+        // Exact timeline from prompt
         if (t >= 1.5 && this.phase === 0) {
             this.showText("YOU ARE SID.");
             this.phase++;
         }
-        else if (t >= 3.5 && this.phase === 1) { // 2s hold
+        else if (t >= 3.0 && this.phase === 1) { 
             this.hideText();
             this.phase++;
         }
-        else if (t >= 4.5 && this.phase === 2) { // 1s gap
+        else if (t >= 3.5 && this.phase === 2) { 
             this.showText("AND THEN...");
             this.phase++;
         }
-        else if (t >= 6.5 && this.phase === 3) { // 2s hold
+        else if (t >= 4.0 && this.phase === 3) { 
             this.hideText();
             this.phase++;
         }
-        else if (t >= 7.5 && this.phase === 4) { // 1s gap
+        else if (t >= 4.5 && this.phase === 4) { 
             this.showText("YOU WAKE UP.", "intro-text-large");
             this.phase++;
         }
-        else if (t >= 9.5 && this.phase === 5) {
+        else if (t >= 6.0 && this.phase === 5) { 
             this.hideText();
             this.phase++;
         }
-        else if (t >= 10.5 && this.phase === 6) { // 3:14 AM appears exactly at 10.5s to sync with bell!
+        else if (t >= 6.5 && this.phase === 6) { 
             this.showText("3:14 AM", "intro-text-largest");
             this.phase++;
         }
-        else if (t >= 13.0 && this.phase === 7) { // 2.5s hold for emphasis
+        else if (t >= 8.0 && this.phase === 7) { 
             this.hideText();
             this.phase++;
         }
-        else if (t >= 14.0 && this.phase === 8) {
+        else if (t >= 8.5 && this.phase === 8) { 
+            this.showText("THE HOUSE IS SILENT.");
+            this.phase++;
+        }
+        else if (t >= 9.5 && this.phase === 9) { 
+            this.hideText();
+            this.phase++;
+        }
+        else if (t >= 10.0 && this.phase === 10) { 
+            this.showText("NO ONE IS HOME.");
+            this.phase++;
+        }
+        else if (t >= 11.0 && this.phase === 11) { 
+            this.hideText();
+            this.phase++;
+        }
+        else if (t >= 11.5 && this.phase === 12) { 
             this.showText("SOMEONE IS WAITING.", "intro-text-creepy");
             this.phase++;
         }
-        else if (t >= 17.0 && this.phase === 9) {
+        else if (t >= 13.5 && this.phase === 13) { 
             this.hideText();
             this.phase++;
         }
-        else if (t >= 19.0 && this.phase === 10) {
+        else if (t >= 14.5 && this.phase === 14) { 
             this.finish();
         }
     }
@@ -102,14 +118,14 @@ class Intro {
         if (extraClass === "intro-text-creepy") {
             this.textElement.style.transition = "opacity 2s ease";
         } else {
-            this.textElement.style.transition = "opacity 1s ease"; // Fast 1s fade in!
+            this.textElement.style.transition = "opacity 0.5s ease";
         }
         
         this.textElement.style.opacity = 1;
     }
     
     hideText() {
-        this.textElement.style.transition = "opacity 1s ease"; // Fast 1s fade out!
+        this.textElement.style.transition = "opacity 0.5s ease";
         this.textElement.style.opacity = 0;
     }
     
@@ -122,7 +138,10 @@ class Intro {
     finish() {
         this.uiElement.classList.add("hidden");
         horrorEventManager.nextThunderTime = performance.now() + 10000;
-        audioManager.fadeOut("clock", 3000); 
+        
+        // Clock is NO LONGER faded out here, as requested in prompt:
+        // "Clock continues into bedroom without duplication"
+        
         sceneManager.changeScene("bedroom");
         objectiveSystem.setObjective("Click to explore the room.");
     }
