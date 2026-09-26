@@ -792,30 +792,14 @@ class Intro {
             this.phase++;
         }
         else if (t >= 14.0 && this.phase === 8) {
-            this.showText("THE HOUSE IS SILENT.");
-            this.phase++;
-        }
-        else if (t >= 16.0 && this.phase === 9) {
-            this.hideText();
-            this.phase++;
-        }
-        else if (t >= 17.0 && this.phase === 10) {
-            this.showText("NO ONE IS HOME.");
-            this.phase++;
-        }
-        else if (t >= 19.0 && this.phase === 11) {
-            this.hideText();
-            this.phase++;
-        }
-        else if (t >= 20.0 && this.phase === 12) {
             this.showText("SOMEONE IS WAITING.", "intro-text-creepy");
             this.phase++;
         }
-        else if (t >= 23.0 && this.phase === 13) {
+        else if (t >= 17.0 && this.phase === 9) {
             this.hideText();
             this.phase++;
         }
-        else if (t >= 25.0 && this.phase === 14) {
+        else if (t >= 19.0 && this.phase === 10) {
             this.finish();
         }
     }
