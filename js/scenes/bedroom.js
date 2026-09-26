@@ -345,8 +345,10 @@ class Bedroom {
             curtainGroup.position.set(x, 1.5, -4.8);
             return curtainGroup;
         };
-        this.scene.add(createCurtain(-1.2));
-        this.scene.add(createCurtain(1.2));
+        this.curtainL = createCurtain(-1.2);
+        this.curtainR = createCurtain(1.2);
+        this.scene.add(this.curtainL);
+        this.scene.add(this.curtainR);
 
         interactionSystem.add(windowFrame, () => {
             showSubtitle("Raining heavily outside.");
@@ -466,7 +468,7 @@ class Bedroom {
             waterBottle.visible = false;
             if (objectiveSystem.step === 0) objectiveSystem.advanceTo(1);
             setTimeout(() => { waterBottle.visible = true; }, 3000); 
-        }, "Water Bottle");
+        }, "DRINK WATER");
 
         // 16. Internship Documents
         const docs = new THREE.Mesh(new THREE.PlaneGeometry(0.2, 0.25), paperMat);
@@ -500,6 +502,25 @@ class Bedroom {
         // Scroll rain texture
         if (this.rainPlane) {
             this.rainPlane.material.map.offset.y -= delta * 2.0;
+        }
+
+        // Spatial Clock Audio
+        if (this.clockMesh && typeof game !== "undefined" && game.cameraSys) {
+            // ONLY spatialize if the horror event hasn't abruptly stopped it or if it's currently ticking
+            // (Horror event might pause it entirely). But since it updates volume multiplier, 
+            // 0 base volume stays 0.
+            const dist = game.cameraSys.yawObject.position.distanceTo(this.clockMesh.position);
+            const maxDist = 8.0;
+            // Map 0 -> 0.8, 8 -> 0
+            let volume = Math.max(0, (1.0 - (dist / maxDist)) * 0.8);
+            audioManager.setTrackVolume("clock", volume);
+        }
+
+        // Subtle Curtain Sway
+        if (this.curtainL && this.curtainR) {
+            const sway = Math.sin(performance.now() * 0.001) * 0.015;
+            this.curtainL.position.z = -4.8 + sway;
+            this.curtainR.position.z = -4.8 + sway;
         }
 
         if (this.dustParticles) {

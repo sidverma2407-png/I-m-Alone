@@ -122,9 +122,20 @@ class Intro {
     finish() {
         this.uiElement.classList.add("hidden");
         horrorEventManager.nextThunderTime = performance.now() + 10000;
-        audioManager.fadeOut("clock", 3000); 
+        
+        // Trigger cinematic fade
+        const fadeOverlay = document.getElementById("fade-overlay");
+        fadeOverlay.classList.remove("hidden");
+        fadeOverlay.style.opacity = "1"; // Start fully black
+        
         sceneManager.changeScene("bedroom");
         objectiveSystem.setObjective("DRINK SOME WATER (Click to play, WASD to move)");
+        
+        // Fade in slowly after 1 second
+        setTimeout(() => {
+            fadeOverlay.style.opacity = "0";
+            setTimeout(() => { fadeOverlay.classList.add("hidden"); }, 5000);
+        }, 1000);
     }
     
     dispose() {
