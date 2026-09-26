@@ -354,4 +354,11 @@ canvas {
     font-size: 20px;
     color: #bbb;
 }
-input[type=range] { vertical-align: middle; }
+input[type=range] { vertical-align: middle; }#hud::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.85) 120%);
+    pointer-events: none;
+    z-index: -1;
+}
