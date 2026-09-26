@@ -874,64 +874,48 @@ class Intro {
         
         const t = this.totalTime + 1.5; 
         
-        // Exact timeline from prompt
+        // Fast, punchy timeline
         if (t >= 1.5 && this.phase === 0) {
             this.showText("YOU ARE SID.");
             this.phase++;
         }
-        else if (t >= 3.0 && this.phase === 1) { 
+        else if (t >= 3.5 && this.phase === 1) { // 2s hold
             this.hideText();
             this.phase++;
         }
-        else if (t >= 3.5 && this.phase === 2) { 
+        else if (t >= 4.5 && this.phase === 2) { // 1s gap
             this.showText("AND THEN...");
             this.phase++;
         }
-        else if (t >= 4.0 && this.phase === 3) { 
+        else if (t >= 6.5 && this.phase === 3) { // 2s hold
             this.hideText();
             this.phase++;
         }
-        else if (t >= 4.5 && this.phase === 4) { 
+        else if (t >= 7.5 && this.phase === 4) { // 1s gap
             this.showText("YOU WAKE UP.", "intro-text-large");
             this.phase++;
         }
-        else if (t >= 6.0 && this.phase === 5) { 
+        else if (t >= 9.5 && this.phase === 5) {
             this.hideText();
             this.phase++;
         }
-        else if (t >= 6.5 && this.phase === 6) { 
+        else if (t >= 10.5 && this.phase === 6) { // 3:14 AM appears exactly at 10.5s to sync with bell!
             this.showText("3:14 AM", "intro-text-largest");
             this.phase++;
         }
-        else if (t >= 8.0 && this.phase === 7) { 
+        else if (t >= 13.0 && this.phase === 7) { // 2.5s hold for emphasis
             this.hideText();
             this.phase++;
         }
-        else if (t >= 8.5 && this.phase === 8) { 
-            this.showText("THE HOUSE IS SILENT.");
-            this.phase++;
-        }
-        else if (t >= 9.5 && this.phase === 9) { 
-            this.hideText();
-            this.phase++;
-        }
-        else if (t >= 10.0 && this.phase === 10) { 
-            this.showText("NO ONE IS HOME.");
-            this.phase++;
-        }
-        else if (t >= 11.0 && this.phase === 11) { 
-            this.hideText();
-            this.phase++;
-        }
-        else if (t >= 11.5 && this.phase === 12) { 
+        else if (t >= 14.0 && this.phase === 8) {
             this.showText("SOMEONE IS WAITING.", "intro-text-creepy");
             this.phase++;
         }
-        else if (t >= 13.5 && this.phase === 13) { 
+        else if (t >= 17.0 && this.phase === 9) {
             this.hideText();
             this.phase++;
         }
-        else if (t >= 14.5 && this.phase === 14) { 
+        else if (t >= 19.0 && this.phase === 10) {
             this.finish();
         }
     }
@@ -947,14 +931,14 @@ class Intro {
         if (extraClass === "intro-text-creepy") {
             this.textElement.style.transition = "opacity 2s ease";
         } else {
-            this.textElement.style.transition = "opacity 0.5s ease";
+            this.textElement.style.transition = "opacity 1s ease"; // Fast 1s fade in!
         }
         
         this.textElement.style.opacity = 1;
     }
     
     hideText() {
-        this.textElement.style.transition = "opacity 0.5s ease";
+        this.textElement.style.transition = "opacity 1s ease"; // Fast 1s fade out!
         this.textElement.style.opacity = 0;
     }
     
@@ -967,10 +951,7 @@ class Intro {
     finish() {
         this.uiElement.classList.add("hidden");
         horrorEventManager.nextThunderTime = performance.now() + 10000;
-        
-        // Clock is NO LONGER faded out here, as requested in prompt:
-        // "Clock continues into bedroom without duplication"
-        
+        audioManager.fadeOut("clock", 3000); 
         sceneManager.changeScene("bedroom");
         objectiveSystem.setObjective("WAKE UP");
     }
@@ -1066,10 +1047,28 @@ class Bedroom {
         floor.rotation.x = -Math.PI / 2;
         this.scene.add(floor);
         
-        // Walls
-        const wallN = new THREE.Mesh(new THREE.BoxGeometry(5, 3, 0.2), wallMat);
-        wallN.position.set(0, 1.5, -2.1);
-        this.scene.add(wallN);
+        // Ceiling
+        const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(5, 4), wallMat);
+        ceiling.rotation.x = Math.PI / 2;
+        ceiling.position.y = 3;
+        this.scene.add(ceiling);
+        
+        // North Wall (With Window Hole)
+        const wallN_L = new THREE.Mesh(new THREE.BoxGeometry(1.75, 3, 0.2), wallMat);
+        wallN_L.position.set(-1.625, 1.5, -2.1);
+        this.scene.add(wallN_L);
+        
+        const wallN_R = new THREE.Mesh(new THREE.BoxGeometry(1.75, 3, 0.2), wallMat);
+        wallN_R.position.set(1.625, 1.5, -2.1);
+        this.scene.add(wallN_R);
+        
+        const wallN_B = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.9, 0.2), wallMat);
+        wallN_B.position.set(0, 0.45, -2.1);
+        this.scene.add(wallN_B);
+        
+        const wallN_T = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.9, 0.2), wallMat);
+        wallN_T.position.set(0, 2.55, -2.1);
+        this.scene.add(wallN_T);
         
         const wallS = new THREE.Mesh(new THREE.BoxGeometry(5, 3, 0.2), wallMat);
         wallS.position.set(0, 1.5, 2.1);
@@ -1082,6 +1081,15 @@ class Bedroom {
         const wallW = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3, 4.4), wallMat);
         wallW.position.set(-2.6, 1.5, 0);
         this.scene.add(wallW);
+
+        // Rain Outside Window
+        const rainTex = this.generateProceduralTexture('noise', '#000000', 512, 512);
+        // Make noise look like rain streaks
+        rainTex.repeat.set(1, 3);
+        const rainMat = new THREE.MeshBasicMaterial({ map: rainTex, transparent: true, opacity: 0.6, color: 0x5588aa });
+        this.rainPlane = new THREE.Mesh(new THREE.PlaneGeometry(4, 4), rainMat);
+        this.rainPlane.position.set(0, 1.5, -2.5); // Outside the window hole
+        this.scene.add(this.rainPlane);
         
         // 1. Bed (South-West corner)
         const bedFrame = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.3, 2.1), woodMat);
@@ -1271,6 +1279,11 @@ class Bedroom {
             if(clockVol < 0) clockVol = 0;
             if(clockVol > 1) clockVol = 1;
             audioManager.setTrackVolume("clock", clockVol);
+        }
+
+        // Scroll rain texture
+        if (this.rainPlane) {
+            this.rainPlane.material.map.offset.y -= delta * 2.0;
         }
     }
 

@@ -80,10 +80,28 @@ class Bedroom {
         floor.rotation.x = -Math.PI / 2;
         this.scene.add(floor);
         
-        // Walls
-        const wallN = new THREE.Mesh(new THREE.BoxGeometry(5, 3, 0.2), wallMat);
-        wallN.position.set(0, 1.5, -2.1);
-        this.scene.add(wallN);
+        // Ceiling
+        const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(5, 4), wallMat);
+        ceiling.rotation.x = Math.PI / 2;
+        ceiling.position.y = 3;
+        this.scene.add(ceiling);
+        
+        // North Wall (With Window Hole)
+        const wallN_L = new THREE.Mesh(new THREE.BoxGeometry(1.75, 3, 0.2), wallMat);
+        wallN_L.position.set(-1.625, 1.5, -2.1);
+        this.scene.add(wallN_L);
+        
+        const wallN_R = new THREE.Mesh(new THREE.BoxGeometry(1.75, 3, 0.2), wallMat);
+        wallN_R.position.set(1.625, 1.5, -2.1);
+        this.scene.add(wallN_R);
+        
+        const wallN_B = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.9, 0.2), wallMat);
+        wallN_B.position.set(0, 0.45, -2.1);
+        this.scene.add(wallN_B);
+        
+        const wallN_T = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.9, 0.2), wallMat);
+        wallN_T.position.set(0, 2.55, -2.1);
+        this.scene.add(wallN_T);
         
         const wallS = new THREE.Mesh(new THREE.BoxGeometry(5, 3, 0.2), wallMat);
         wallS.position.set(0, 1.5, 2.1);
@@ -96,6 +114,15 @@ class Bedroom {
         const wallW = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3, 4.4), wallMat);
         wallW.position.set(-2.6, 1.5, 0);
         this.scene.add(wallW);
+
+        // Rain Outside Window
+        const rainTex = this.generateProceduralTexture('noise', '#000000', 512, 512);
+        // Make noise look like rain streaks
+        rainTex.repeat.set(1, 3);
+        const rainMat = new THREE.MeshBasicMaterial({ map: rainTex, transparent: true, opacity: 0.6, color: 0x5588aa });
+        this.rainPlane = new THREE.Mesh(new THREE.PlaneGeometry(4, 4), rainMat);
+        this.rainPlane.position.set(0, 1.5, -2.5); // Outside the window hole
+        this.scene.add(this.rainPlane);
         
         // 1. Bed (South-West corner)
         const bedFrame = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.3, 2.1), woodMat);
@@ -285,6 +312,11 @@ class Bedroom {
             if(clockVol < 0) clockVol = 0;
             if(clockVol > 1) clockVol = 1;
             audioManager.setTrackVolume("clock", clockVol);
+        }
+
+        // Scroll rain texture
+        if (this.rainPlane) {
+            this.rainPlane.material.map.offset.y -= delta * 2.0;
         }
     }
 
