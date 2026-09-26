@@ -1,11 +1,15 @@
 class Game {
     constructor() {
         this.canvas = document.getElementById("gameCanvas");
-        this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
+        this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true, powerPreference: "high-performance" });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.setPixelRatio(window.devicePixelRatio);
+        // Cap pixel ratio to 1.5 to prevent extreme performance drops on 4K/retina displays
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
         this.renderer.shadowMap.enabled = true;
-        
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Better looking, optimized shadows
+        this.renderer.outputEncoding = THREE.sRGBEncoding;
+        this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        this.renderer.toneMappingExposure = 1.0;
         this.clock = new THREE.Clock();
         
         // Initialize Player for the game (global)
@@ -13,6 +17,7 @@ class Game {
         this.player = new PlayerController(bedroomScene.scene, this.cameraSys);
         
         window.addEventListener('resize', () => this.onWindowResize(), false);
+
 
         // Start game at Main Menu
         sceneManager.changeScene("mainmenu");
@@ -54,14 +59,20 @@ class Game {
         this.player.update(delta);
         horrorEventManager.update(delta);
         
-        if (sceneManager.currentScene) {
+        if (sceneManager.currentSceneName) {
             let camToRender = this.cameraSys.camera;
+            let sceneToRender = sceneManager.currentScene.scene;
+            
             if (sceneManager.currentSceneName === "mainmenu") {
                 camToRender = mainMenuScene.camera;
+                sceneToRender = mainMenuScene.scene; // Render the image plane
             } else if (sceneManager.currentSceneName === "intro") {
                 camToRender = introScene.camera;
             }
-            this.renderer.render(sceneManager.currentScene.scene, camToRender);
+            
+            if (sceneToRender) {
+                this.renderer.render(sceneToRender, camToRender);
+            }
         }
     }
 }

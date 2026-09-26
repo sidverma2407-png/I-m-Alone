@@ -12,9 +12,9 @@ class PlayerController {
 
         this.velocity = new THREE.Vector3();
         this.direction = new THREE.Vector3();
-        this.speed = 3.0; // Walk speed
-        this.sprintSpeed = 5.0; // Sprint speed
-        this.crouchSpeed = 1.5;
+        this.speed = 1.3; // Walk speed (realistic slow pace)
+        this.sprintSpeed = 2.4; // Sprint speed (realistic jog)
+        this.crouchSpeed = 0.8;
         this.crouchHeight = 1.0;
         this.normalHeight = 1.6;
 
@@ -38,6 +38,10 @@ class PlayerController {
         document.addEventListener('click', () => {
             if (sceneManager.currentSceneName === "bedroom") { // Only lock in playable scenes
                 document.body.requestPointerLock();
+                // If it was the initial hint, clear it
+                if (document.getElementById("objective-text") && document.getElementById("objective-text").innerText === "Click to explore the room.") {
+                    objectiveSystem.clearObjective();
+                }
             }
         });
     }
@@ -96,10 +100,68 @@ class PlayerController {
         if (this.moveForward || this.moveBackward) this.velocity.z -= this.direction.z * currentSpeed * delta;
         if (this.moveLeft || this.moveRight) this.velocity.x -= this.direction.x * currentSpeed * delta;
 
-        this.yawObject.translateX(-this.velocity.x);
-        this.yawObject.translateZ(this.velocity.z);
+        const deltaXLocal = -this.velocity.x;
+        const deltaZLocal = this.velocity.z;
+
+        // Apply movement with simple collision check
+        if (sceneManager.currentScene.colliders) {
+            // Compute desired global delta
+            const currentPos = this.yawObject.position.clone();
+            
+            this.yawObject.translateX(deltaXLocal);
+            this.yawObject.translateZ(deltaZLocal);
+            
+            const desiredPos = this.yawObject.position.clone();
+            const globalDeltaX = desiredPos.x - currentPos.x;
+            const globalDeltaZ = desiredPos.z - currentPos.z;
+            
+            // Revert back to test individual axes
+            this.yawObject.position.copy(currentPos);
+
+            const playerBox = new THREE.Box3();
+            const setPlayerBoxAt = (x, z) => {
+                playerBox.min.set(x - 0.3, this.yawObject.position.y - 1.75, z - 0.3);
+                playerBox.max.set(x + 0.3, this.yawObject.position.y, z + 0.3);
+            };
+
+            // Test X
+            let canMoveX = true;
+            setPlayerBoxAt(currentPos.x + globalDeltaX, currentPos.z);
+            for (let collider of sceneManager.currentScene.colliders) {
+                if (playerBox.intersectsBox(new THREE.Box3().setFromObject(collider))) {
+                    canMoveX = false;
+                    break;
+                }
+            }
+
+            // Test Z
+            let canMoveZ = true;
+            setPlayerBoxAt(currentPos.x, currentPos.z + globalDeltaZ);
+            for (let collider of sceneManager.currentScene.colliders) {
+                if (playerBox.intersectsBox(new THREE.Box3().setFromObject(collider))) {
+                    canMoveZ = false;
+                    break;
+                }
+            }
+
+            // Apply allowed movement globally
+            if (canMoveX) this.yawObject.position.x += globalDeltaX;
+            if (canMoveZ) this.yawObject.position.z += globalDeltaZ;
+
+        } else {
+            this.yawObject.translateX(deltaXLocal);
+            this.yawObject.translateZ(deltaZLocal);
+        }
         
-        // Head bobbing logic could be added here
+        // Head bobbing logic
+        const movementSpeed = Math.sqrt(deltaXLocal * deltaXLocal + deltaZLocal * deltaZLocal);
+        if (movementSpeed > 0.001) {
+            this.bobTimer = (this.bobTimer || 0) + delta * currentSpeed * 2.5;
+            this.cameraSys.camera.position.y = Math.sin(this.bobTimer) * 0.05;
+        } else {
+            // reset camera Y smoothly
+            this.cameraSys.camera.position.y += (0 - this.cameraSys.camera.position.y) * 10 * delta;
+        }
         
         interactionSystem.update(this.cameraSys.camera);
     }

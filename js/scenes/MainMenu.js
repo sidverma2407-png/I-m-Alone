@@ -13,8 +13,8 @@ class MainMenu {
         const textureLoader = new THREE.TextureLoader();
         const texture = textureLoader.load('assets/images/menu-background-new.jpg');
         
-        // Use basic material with white color so image looks normal
-        const material = new THREE.MeshBasicMaterial({ map: texture, color: 0xffffff }); 
+        // Use basic material for reliable rendering. We will simulate lightning by changing its color!
+        const material = new THREE.MeshBasicMaterial({ map: texture, color: 0x888888 });
 
         this.plane = new THREE.Mesh(geometry, material);
         this.plane.position.z = 0;
@@ -26,7 +26,7 @@ class MainMenu {
     }
     update(delta) {
         // Slow zoom effect
-        if (this.camera.position.z > 3) {
+        if (this.camera.position.z > 3.5) {
             this.camera.position.z -= delta * 0.05;
         }
     }
