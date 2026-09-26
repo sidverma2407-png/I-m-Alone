@@ -15,7 +15,7 @@ class Bedroom {
         console.log("Bedroom Init");
         audioManager.setTrackVolume("rain", 0.6); 
         audioManager.play("menu-tension"); // Play Annabelle Bee music
-        audioManager.setTrackVolume("menu-tension", 0.4);
+        audioManager.setTrackVolume("menu-tension", 2.0); // Play it much louder (2x of base 0.25 = 0.5)
 
         // Start player lying in bed
         if (typeof game !== "undefined" && game.cameraSys) {
