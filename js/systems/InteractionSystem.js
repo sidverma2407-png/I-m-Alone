@@ -40,3 +40,17 @@ class InteractionSystem {
     }
 }
 const interactionSystem = new InteractionSystem();
+
+function showSubtitle(text, duration = 3000) {
+    const container = document.getElementById("subtitle-container");
+    const textEl = document.getElementById("subtitle-text");
+    textEl.innerText = text;
+    container.classList.remove("hidden");
+    container.style.opacity = 1;
+    
+    if (window.subtitleTimeout) clearTimeout(window.subtitleTimeout);
+    window.subtitleTimeout = setTimeout(() => {
+        container.style.opacity = 0;
+        setTimeout(() => container.classList.add("hidden"), 500);
+    }, duration);
+}
