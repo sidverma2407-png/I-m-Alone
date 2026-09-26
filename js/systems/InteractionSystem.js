@@ -17,13 +17,20 @@ class InteractionSystem {
         if (!camera) return;
         
         this.raycaster.setFromCamera(this.center, camera);
-        const intersects = this.raycaster.intersectObjects(this.interactables, false);
+        const intersects = this.raycaster.intersectObjects(this.interactables, true); // Must be true for Groups
 
         if (intersects.length > 0 && intersects[0].distance < 3) { // 3 units interaction range
-            const obj = intersects[0].object;
-            if (this.currentInteractable !== obj) {
-                this.currentInteractable = obj;
-                interactionPromptUI.show(obj.userData.promptText);
+            // Walk up parents if we hit a child mesh of a Group
+            let obj = intersects[0].object;
+            while (obj && !obj.userData.interactable && obj.parent) {
+                obj = obj.parent;
+            }
+            
+            if (obj && obj.userData.interactable) {
+                if (this.currentInteractable !== obj) {
+                    this.currentInteractable = obj;
+                    interactionPromptUI.show(obj.userData.promptText);
+                }
             }
         } else {
             if (this.currentInteractable) {
