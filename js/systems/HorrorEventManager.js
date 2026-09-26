@@ -31,7 +31,7 @@ class HorrorEventManager {
     }
 
     update(delta) {
-        if (sceneManager.currentSceneName !== "bedroom") return;
+        if (sceneManager.currentSceneName !== "bedroom" && sceneManager.currentSceneName !== "mainmenu") return;
 
         const now = performance.now();
 
@@ -48,10 +48,15 @@ class HorrorEventManager {
             
             if (sceneManager.currentSceneName === "bedroom" && lightingSystem.moonLight) {
                 lightingSystem.moonLight.intensity = 5.0 + Math.random() * 2.0; 
+            } else if (sceneManager.currentSceneName === "mainmenu" && mainMenuScene.plane) {
+                mainMenuScene.plane.material.color.setHex(0xffffff);
             }
         } else {
             if (lightingSystem.moonLight) {
                 lightingSystem.moonLight.intensity = 0.5;
+            }
+            if (typeof mainMenuScene !== "undefined" && mainMenuScene.plane) {
+                mainMenuScene.plane.material.color.setHex(0x888888);
             }
         }
 
