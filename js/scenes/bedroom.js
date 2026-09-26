@@ -13,8 +13,6 @@ class Bedroom {
     init() {
         console.log("Bedroom Init");
         
-        // Start bedroom audio
-        audioManager.play("clock");
         // Ensure rain is softer in bedroom
         audioManager.setTrackVolume("rain", 0.6); // 60% of base volume
     }
@@ -125,16 +123,7 @@ class Bedroom {
     update(delta) {
         // We need player position. If game object is globally available:
         if (typeof game !== "undefined" && game.cameraSys) {
-            const playerPos = game.cameraSys.camera.position;
-            
-            // Clock spatialization
-            const clockPos = new THREE.Vector3(0, 2.2, -4.74);
-            const distToClock = playerPos.distanceTo(clockPos);
-            // Full volume at 1m, 0 at 8m
-            let clockVol = 1.0 - ((distToClock - 1) / 7);
-            if(clockVol < 0) clockVol = 0;
-            if(clockVol > 1) clockVol = 1;
-            audioManager.setTrackVolume("clock", clockVol);
+            // Future spatialization logic can go here
         }
     }
 

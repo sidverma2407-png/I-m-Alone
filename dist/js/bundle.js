@@ -758,70 +758,75 @@ class Intro {
         if (this.skipped) return;
         this.totalTime += delta;
         
-        // Time in intro scene (add 1.5 to match user's timeline)
+        // Time in intro scene (add 1.5 to match original logic, though we just space things out now)
         const t = this.totalTime + 1.5; 
         
+        // We will make each text stay on screen longer and fade slowly.
         // 1.5 YOU ARE SID.
         if (t >= 1.5 && this.phase === 0) {
             this.showText("YOU ARE SID.");
             this.phase++;
         }
-        else if (t >= 3.0 && this.phase === 1) {
+        else if (t >= 4.5 && this.phase === 1) { // 3s hold
             this.hideText();
             this.phase++;
         }
-        // 3.5 AND THEN...
-        else if (t >= 3.5 && this.phase === 2) {
+        // 6.5 AND THEN...
+        else if (t >= 6.5 && this.phase === 2) { // 2s gap
             this.showText("AND THEN...");
             this.phase++;
         }
-        // 4.5 YOU WAKE UP.
-        else if (t >= 4.5 && this.phase === 3) {
+        else if (t >= 9.5 && this.phase === 3) { // 3s hold
+            this.hideText();
+            this.phase++;
+        }
+        // 11.5 YOU WAKE UP.
+        else if (t >= 11.5 && this.phase === 4) { // 2s gap
             this.showText("YOU WAKE UP.", "intro-text-large");
             this.phase++;
         }
-        else if (t >= 6.0 && this.phase === 4) {
+        else if (t >= 14.5 && this.phase === 5) {
             this.hideText();
             this.phase++;
         }
-        // 6.5 3:14 AM
-        else if (t >= 6.5 && this.phase === 5) {
+        // 16.5 3:14 AM
+        else if (t >= 16.5 && this.phase === 6) {
             this.showText("3:14 AM", "intro-text-largest");
             this.phase++;
         }
-        else if (t >= 8.0 && this.phase === 6) {
+        else if (t >= 19.5 && this.phase === 7) {
             this.hideText();
             this.phase++;
         }
-        // 8.5 THE HOUSE IS SILENT.
-        else if (t >= 8.5 && this.phase === 7) {
+        // 21.5 THE HOUSE IS SILENT.
+        else if (t >= 21.5 && this.phase === 8) {
             this.showText("THE HOUSE IS SILENT.");
             this.phase++;
         }
-        else if (t >= 9.5 && this.phase === 8) {
+        else if (t >= 24.5 && this.phase === 9) {
             this.hideText();
             this.phase++;
         }
-        // 10.0 NO ONE IS HOME.
-        else if (t >= 10.0 && this.phase === 9) {
+        // 26.5 NO ONE IS HOME.
+        else if (t >= 26.5 && this.phase === 10) {
             this.showText("NO ONE IS HOME.");
             this.phase++;
         }
-        else if (t >= 11.0 && this.phase === 10) {
+        else if (t >= 29.5 && this.phase === 11) {
             this.hideText();
             this.phase++;
         }
-        // 11.5 SOMEONE IS WAITING.
-        else if (t >= 11.5 && this.phase === 11) {
+        // 31.5 SOMEONE IS WAITING.
+        else if (t >= 31.5 && this.phase === 12) {
             this.showText("SOMEONE IS WAITING.", "intro-text-creepy");
             this.phase++;
         }
-        else if (t >= 13.5 && this.phase === 12) {
+        else if (t >= 35.5 && this.phase === 13) {
             this.hideText();
             this.phase++;
         }
-        // 15.0 Transition to bedroom
-        else if (t >= 15.0 && this.phase === 13) {
+        // 38.0 Transition to bedroom
+        else if (t >= 38.0 && this.phase === 14) {
             this.finish();
         }
     }
@@ -835,18 +840,18 @@ class Intro {
         // Force reflow
         void this.textElement.offsetWidth;
         
-        // We use slow opacity transition for creepy
+        // We use slow opacity transition for creepy, and 2s for all others
         if (extraClass === "intro-text-creepy") {
-            this.textElement.style.transition = "opacity 2s ease";
+            this.textElement.style.transition = "opacity 3s ease";
         } else {
-            this.textElement.style.transition = "opacity 0.5s ease";
+            this.textElement.style.transition = "opacity 2s ease";
         }
         
         this.textElement.style.opacity = 1;
     }
     
     hideText() {
-        this.textElement.style.transition = "opacity 0.5s ease";
+        this.textElement.style.transition = "opacity 2s ease";
         this.textElement.style.opacity = 0;
     }
     
@@ -860,6 +865,10 @@ class Intro {
         this.uiElement.classList.add("hidden");
         // Update thunder timer so it doesn't fire immediately
         horrorEventManager.nextThunderTime = performance.now() + 10000;
+        
+        // User requested clock to stop after loading script ends
+        audioManager.fadeOut("clock", 3000); // fade out over 3 seconds as we wake up
+        
         sceneManager.changeScene("bedroom");
         objectiveSystem.setObjective("Click to explore the room.");
     }
@@ -888,8 +897,6 @@ class Bedroom {
     init() {
         console.log("Bedroom Init");
         
-        // Start bedroom audio
-        audioManager.play("clock");
         // Ensure rain is softer in bedroom
         audioManager.setTrackVolume("rain", 0.6); // 60% of base volume
     }
@@ -1000,16 +1007,7 @@ class Bedroom {
     update(delta) {
         // We need player position. If game object is globally available:
         if (typeof game !== "undefined" && game.cameraSys) {
-            const playerPos = game.cameraSys.camera.position;
-            
-            // Clock spatialization
-            const clockPos = new THREE.Vector3(0, 2.2, -4.74);
-            const distToClock = playerPos.distanceTo(clockPos);
-            // Full volume at 1m, 0 at 8m
-            let clockVol = 1.0 - ((distToClock - 1) / 7);
-            if(clockVol < 0) clockVol = 0;
-            if(clockVol > 1) clockVol = 1;
-            audioManager.setTrackVolume("clock", clockVol);
+            // Future spatialization logic can go here
         }
     }
 
