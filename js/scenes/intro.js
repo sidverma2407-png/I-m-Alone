@@ -45,34 +45,32 @@ class Intro {
         if (this.skipped) return;
         this.totalTime += delta;
         
-        // Time in intro scene (add 1.5 to match original logic, though we just space things out now)
         const t = this.totalTime + 1.5; 
         
-        // We will make each text stay on screen longer and fade slowly.
         // 1.5 YOU ARE SID.
         if (t >= 1.5 && this.phase === 0) {
             this.showText("YOU ARE SID.");
             this.phase++;
         }
-        else if (t >= 4.5 && this.phase === 1) { // 3s hold
+        else if (t >= 4.0 && this.phase === 1) { // 2.5s hold (including 1.5s fade in)
             this.hideText();
             this.phase++;
         }
-        // 6.5 AND THEN...
-        else if (t >= 6.5 && this.phase === 2) { // 2s gap
+        // 6.5 AND THEN... (1.5s fade out + 1s wait = 2.5s later)
+        else if (t >= 6.5 && this.phase === 2) { 
             this.showText("AND THEN...");
             this.phase++;
         }
-        else if (t >= 9.5 && this.phase === 3) { // 3s hold
+        else if (t >= 9.0 && this.phase === 3) { 
             this.hideText();
             this.phase++;
         }
         // 11.5 YOU WAKE UP.
-        else if (t >= 11.5 && this.phase === 4) { // 2s gap
+        else if (t >= 11.5 && this.phase === 4) { 
             this.showText("YOU WAKE UP.", "intro-text-large");
             this.phase++;
         }
-        else if (t >= 14.5 && this.phase === 5) {
+        else if (t >= 14.0 && this.phase === 5) {
             this.hideText();
             this.phase++;
         }
@@ -81,7 +79,7 @@ class Intro {
             this.showText("3:14 AM", "intro-text-largest");
             this.phase++;
         }
-        else if (t >= 19.5 && this.phase === 7) {
+        else if (t >= 19.0 && this.phase === 7) {
             this.hideText();
             this.phase++;
         }
@@ -90,7 +88,7 @@ class Intro {
             this.showText("THE HOUSE IS SILENT.");
             this.phase++;
         }
-        else if (t >= 24.5 && this.phase === 9) {
+        else if (t >= 24.0 && this.phase === 9) {
             this.hideText();
             this.phase++;
         }
@@ -99,7 +97,7 @@ class Intro {
             this.showText("NO ONE IS HOME.");
             this.phase++;
         }
-        else if (t >= 29.5 && this.phase === 11) {
+        else if (t >= 29.0 && this.phase === 11) {
             this.hideText();
             this.phase++;
         }
@@ -108,12 +106,12 @@ class Intro {
             this.showText("SOMEONE IS WAITING.", "intro-text-creepy");
             this.phase++;
         }
-        else if (t >= 35.5 && this.phase === 13) {
+        else if (t >= 34.5 && this.phase === 13) { // Slightly longer hold for the last one
             this.hideText();
             this.phase++;
         }
-        // 38.0 Transition to bedroom
-        else if (t >= 38.0 && this.phase === 14) {
+        // 36.5 Transition to bedroom (1.5s fade + 0.5s black screen)
+        else if (t >= 36.5 && this.phase === 14) {
             this.finish();
         }
     }
@@ -127,18 +125,18 @@ class Intro {
         // Force reflow
         void this.textElement.offsetWidth;
         
-        // We use slow opacity transition for creepy, and 2s for all others
+        // We use slow opacity transition for creepy, and 1.5s for all others
         if (extraClass === "intro-text-creepy") {
-            this.textElement.style.transition = "opacity 3s ease";
+            this.textElement.style.transition = "opacity 2.5s ease";
         } else {
-            this.textElement.style.transition = "opacity 2s ease";
+            this.textElement.style.transition = "opacity 1.5s ease";
         }
         
         this.textElement.style.opacity = 1;
     }
     
     hideText() {
-        this.textElement.style.transition = "opacity 2s ease";
+        this.textElement.style.transition = "opacity 1.5s ease";
         this.textElement.style.opacity = 0;
     }
     
