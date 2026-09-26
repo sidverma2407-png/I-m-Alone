@@ -1018,7 +1018,7 @@ class Intro {
         horrorEventManager.nextThunderTime = performance.now() + 10000;
         audioManager.fadeOut("clock", 3000); 
         sceneManager.changeScene("bedroom");
-        objectiveSystem.setObjective("Click screen to explore. (WASD to move, Mouse to look)");
+        objectiveSystem.setObjective("DRINK SOME WATER (Click to play, WASD to move)");
     }
     
     dispose() {
@@ -1639,13 +1639,35 @@ class Bedroom {
         // 1. Bed (South-West corner)
         const bed = createDetailedBed(woodMat, fabricMat, blanketMat, pillowMat);
         bed.position.set(-3.5, 0, 3.0);
-        bed.rotation.y = Math.PI; // Reverse the bed so headboard is against the wall
+        bed.rotation.y = Math.PI / 2; // Rotate 90 degrees to face headboard against the West wall
         this.scene.add(bed);
         this.colliders.push(bed);
         
         interactionSystem.add(bed, () => {
-            objectiveSystem.advanceTo(1);
+            showSubtitle("I should probably get up.");
         }, "Bed");
+        
+        // 1.5 Bookshelf (West wall)
+        const bookshelfGroup = new THREE.Group();
+        const shelfFrame = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2.0, 0.4), woodMat);
+        shelfFrame.position.y = 1.0;
+        bookshelfGroup.add(shelfFrame);
+        // Cutout for shelves
+        const shelfInner = new THREE.Mesh(new THREE.BoxGeometry(1.1, 1.9, 0.38), blackMat);
+        shelfInner.position.set(0, 1.0, 0.02);
+        bookshelfGroup.add(shelfInner);
+        for(let i=0; i<4; i++) {
+            const shelf = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.05, 0.38), woodMat);
+            shelf.position.set(0, 0.4 + i * 0.4, 0.02);
+            bookshelfGroup.add(shelf);
+        }
+        bookshelfGroup.position.set(-4.5, 0, 0); // Against West wall
+        bookshelfGroup.rotation.y = Math.PI / 2; // Face East
+        this.scene.add(bookshelfGroup);
+        this.colliders.push(bookshelfGroup);
+        interactionSystem.add(bookshelfGroup, () => {
+            showSubtitle("Some dusty old books.");
+        }, "Bookshelf");
         
         // 2. Cupboard / Wardrobe (North-West corner)
         const cupboard = createDetailedWardrobe(woodMat, metalMat);
@@ -1656,7 +1678,7 @@ class Bedroom {
         this.colliders.push(cupboard);
         interactionSystem.add(cupboard, () => {
             showSubtitle("Empty mostly.");
-            objectiveSystem.advanceTo(6);
+            if (objectiveSystem.step === 5) objectiveSystem.advanceTo(6);
         }, "Wardrobe");
         
         // 3. Desk (East wall)
@@ -1754,6 +1776,14 @@ class Bedroom {
             showSubtitle("An old house surrounded by trees.");
         }, "Painting");
 
+        // 8.5 Poster (North wall)
+        const poster = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.9), paperMat);
+        poster.position.set(-2.0, 1.8, -4.95);
+        this.scene.add(poster);
+        interactionSystem.add(poster, () => {
+            showSubtitle("A torn band poster.");
+        }, "Poster");
+
         // 9. Phone (Nightstand)
         const nightstand = createDetailedNightstand(woodMat, metalMat);
         nightstand.position.set(-2.0, 0, 4.0);
@@ -1849,6 +1879,7 @@ class Bedroom {
             showSubtitle("* Drinking water *");
             audioManager.play("rattle");
             waterBottle.visible = false;
+            if (objectiveSystem.step === 0) objectiveSystem.advanceTo(1);
             setTimeout(() => { waterBottle.visible = true; }, 3000); 
         }, "Water Bottle");
 
