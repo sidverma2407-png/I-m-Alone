@@ -205,7 +205,7 @@ class HorrorEventManager {
     }
 
     update(delta) {
-        if (sceneManager.currentSceneName !== "bedroom" && sceneManager.currentSceneName !== "mainmenu") return;
+        if (sceneManager.currentSceneName !== "bedroom") return;
 
         const now = performance.now();
 
@@ -222,15 +222,10 @@ class HorrorEventManager {
             
             if (sceneManager.currentSceneName === "bedroom" && lightingSystem.moonLight) {
                 lightingSystem.moonLight.intensity = 5.0 + Math.random() * 2.0; 
-            } else if (sceneManager.currentSceneName === "mainmenu" && mainMenuScene.plane) {
-                mainMenuScene.plane.material.color.setHex(0xffffff);
             }
         } else {
             if (lightingSystem.moonLight) {
                 lightingSystem.moonLight.intensity = 0.5;
-            }
-            if (mainMenuScene.plane) {
-                mainMenuScene.plane.material.color.setHex(0x888888);
             }
         }
 
@@ -1016,6 +1011,7 @@ class Intro {
     finish() {
         this.uiElement.classList.add("hidden");
         horrorEventManager.nextThunderTime = performance.now() + 10000;
+        audioManager.fadeOut("clock", 3000); 
         
         // Trigger cinematic fade
         const fadeOverlay = document.getElementById("fade-overlay");
@@ -1928,18 +1924,6 @@ class Bedroom {
         // Scroll rain texture
         if (this.rainPlane) {
             this.rainPlane.material.map.offset.y -= delta * 2.0;
-        }
-
-        // Spatial Clock Audio
-        if (this.clockMesh && typeof game !== "undefined" && game.cameraSys) {
-            // ONLY spatialize if the horror event hasn't abruptly stopped it or if it's currently ticking
-            // (Horror event might pause it entirely). But since it updates volume multiplier, 
-            // 0 base volume stays 0.
-            const dist = game.cameraSys.yawObject.position.distanceTo(this.clockMesh.position);
-            const maxDist = 8.0;
-            // Map 0 -> 0.8, 8 -> 0
-            let volume = Math.max(0, (1.0 - (dist / maxDist)) * 0.8);
-            audioManager.setTrackVolume("clock", volume);
         }
 
         // Subtle Curtain Sway

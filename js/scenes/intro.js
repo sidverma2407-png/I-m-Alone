@@ -122,6 +122,7 @@ class Intro {
     finish() {
         this.uiElement.classList.add("hidden");
         horrorEventManager.nextThunderTime = performance.now() + 10000;
+        audioManager.fadeOut("clock", 3000); 
         
         // Trigger cinematic fade
         const fadeOverlay = document.getElementById("fade-overlay");

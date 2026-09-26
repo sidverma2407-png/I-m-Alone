@@ -504,18 +504,6 @@ class Bedroom {
             this.rainPlane.material.map.offset.y -= delta * 2.0;
         }
 
-        // Spatial Clock Audio
-        if (this.clockMesh && typeof game !== "undefined" && game.cameraSys) {
-            // ONLY spatialize if the horror event hasn't abruptly stopped it or if it's currently ticking
-            // (Horror event might pause it entirely). But since it updates volume multiplier, 
-            // 0 base volume stays 0.
-            const dist = game.cameraSys.yawObject.position.distanceTo(this.clockMesh.position);
-            const maxDist = 8.0;
-            // Map 0 -> 0.8, 8 -> 0
-            let volume = Math.max(0, (1.0 - (dist / maxDist)) * 0.8);
-            audioManager.setTrackVolume("clock", volume);
-        }
-
         // Subtle Curtain Sway
         if (this.curtainL && this.curtainR) {
             const sway = Math.sin(performance.now() * 0.001) * 0.015;
