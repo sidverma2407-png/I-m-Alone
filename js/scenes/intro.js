@@ -124,7 +124,7 @@ class Intro {
         horrorEventManager.nextThunderTime = performance.now() + 10000;
         audioManager.fadeOut("clock", 3000); 
         sceneManager.changeScene("bedroom");
-        objectiveSystem.setObjective("WAKE UP");
+        objectiveSystem.setObjective("Click screen to explore. (WASD to move, Mouse to look)");
     }
     
     dispose() {

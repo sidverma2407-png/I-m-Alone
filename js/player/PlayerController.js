@@ -153,7 +153,15 @@ class PlayerController {
             this.yawObject.translateZ(deltaZLocal);
         }
         
-        // Head bobbing logic could be added here
+        // Head bobbing logic
+        const movementSpeed = Math.sqrt(deltaXLocal * deltaXLocal + deltaZLocal * deltaZLocal);
+        if (movementSpeed > 0.001) {
+            this.bobTimer = (this.bobTimer || 0) + delta * currentSpeed * 2.5;
+            this.cameraSys.camera.position.y = Math.sin(this.bobTimer) * 0.05;
+        } else {
+            // reset camera Y smoothly
+            this.cameraSys.camera.position.y += (0 - this.cameraSys.camera.position.y) * 10 * delta;
+        }
         
         interactionSystem.update(this.cameraSys.camera);
     }

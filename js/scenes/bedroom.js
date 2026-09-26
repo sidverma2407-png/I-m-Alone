@@ -22,6 +22,7 @@ class Bedroom {
             game.cameraSys.yawObject.rotation.y = Math.PI / 2; // Facing side
 
             // Subtle wake-up animation
+            const targetX = -2.0; // Stand next to the bed (fixes getting stuck in collider)
             const targetY = 1.75; // Standing height
             const targetPitch = 0; // Looking straight
             
@@ -29,13 +30,14 @@ class Bedroom {
             this.wakeUpInterval = setInterval(() => {
                 progress += 0.02;
                 if (progress >= 1) {
-                    game.cameraSys.yawObject.position.y = targetY;
+                    game.cameraSys.yawObject.position.set(targetX, targetY, 3.0);
                     game.cameraSys.pitchObject.rotation.x = targetPitch;
                     clearInterval(this.wakeUpInterval);
                     return;
                 }
                 // Ease out cubic
                 const ease = 1 - Math.pow(1 - progress, 3);
+                game.cameraSys.yawObject.position.x = -3.5 + (targetX - (-3.5)) * ease; // slide off bed
                 game.cameraSys.yawObject.position.y = 0.7 + (targetY - 0.7) * ease;
                 game.cameraSys.pitchObject.rotation.x = -Math.PI/2 + (targetPitch - (-Math.PI/2)) * ease;
             }, 30); // ~50 ticks for 1.5s
