@@ -695,9 +695,9 @@ class PlayerController {
 
         this.velocity = new THREE.Vector3();
         this.direction = new THREE.Vector3();
-        this.speed = 3.0; // Walk speed
-        this.sprintSpeed = 5.0; // Sprint speed
-        this.crouchSpeed = 1.5;
+        this.speed = 1.3; // Walk speed (realistic slow pace)
+        this.sprintSpeed = 2.4; // Sprint speed (realistic jog)
+        this.crouchSpeed = 0.8;
         this.crouchHeight = 1.0;
         this.normalHeight = 1.6;
 
@@ -1429,6 +1429,8 @@ class Bedroom {
     init() {
         console.log("Bedroom Init");
         audioManager.setTrackVolume("rain", 0.6); 
+        audioManager.play("menu-tension"); // Play Annabelle Bee music
+        audioManager.setTrackVolume("menu-tension", 0.4);
 
         // Start player lying in bed
         if (typeof game !== "undefined" && game.cameraSys) {
@@ -1612,8 +1614,8 @@ class Bedroom {
         this.rainPlane.position.set(0, 1.75, -6.0);
         this.scene.add(this.rainPlane);
 
-        // Ambient Moonlight (Cinematic - Not too bright)
-        const moonlight = new THREE.DirectionalLight(0x7799bb, 0.8); // Dimmer, more focused blue
+        // Ambient Moonlight (Cinematic - Extremely Dark)
+        const moonlight = new THREE.DirectionalLight(0x7799bb, 0.35); // Dimmer, almost dark
         moonlight.position.set(0, 3, -8); 
         moonlight.target.position.set(0, 0, 0);
         moonlight.castShadow = true;
@@ -1631,12 +1633,13 @@ class Bedroom {
         this.scene.add(moonlight.target);
         
         // Very soft fill light to keep pitch black corners barely visible
-        const ambient = new THREE.AmbientLight(0x1a2230, 0.15); // extremely low
+        const ambient = new THREE.AmbientLight(0x1a2230, 0.05); // near pitch black
         this.scene.add(ambient);
         
         // 1. Bed (South-West corner)
         const bed = createDetailedBed(woodMat, fabricMat, blanketMat, pillowMat);
         bed.position.set(-3.5, 0, 3.0);
+        bed.rotation.y = Math.PI; // Reverse the bed so headboard is against the wall
         this.scene.add(bed);
         this.colliders.push(bed);
         

@@ -12,9 +12,9 @@ class PlayerController {
 
         this.velocity = new THREE.Vector3();
         this.direction = new THREE.Vector3();
-        this.speed = 3.0; // Walk speed
-        this.sprintSpeed = 5.0; // Sprint speed
-        this.crouchSpeed = 1.5;
+        this.speed = 1.3; // Walk speed (realistic slow pace)
+        this.sprintSpeed = 2.4; // Sprint speed (realistic jog)
+        this.crouchSpeed = 0.8;
         this.crouchHeight = 1.0;
         this.normalHeight = 1.6;
 
