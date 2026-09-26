@@ -1420,7 +1420,6 @@ class Bedroom {
 
     init() {
         console.log("Bedroom Init");
-        audioManager.play("clock");
         audioManager.setTrackVolume("rain", 0.6); 
 
         // Start player lying in bed
@@ -1468,6 +1467,20 @@ class Bedroom {
                 const y = Math.floor((i / 4) / width);
                 noise = Math.sin(x * 0.1 + Math.sin(y * 0.05) * 10) * 15;
                 noise += (Math.random() - 0.5) * 10;
+            } else if (type === 'wood_vertical') { 
+                const x = (i / 4) % width;
+                if (x % 32 < 2) {
+                    noise = -50; 
+                } else {
+                    noise = (Math.random() - 0.5) * 10 + Math.sin(x * 0.5) * 5; 
+                }
+            } else if (type === 'wood_floor') { 
+                const y = Math.floor((i / 4) / width);
+                if (y % 64 < 2) {
+                    noise = -30;
+                } else {
+                    noise = (Math.random() - 0.5) * 10; 
+                }
             } else if (type === 'fabric') {
                 noise = (Math.random() - 0.5) * 20;
             } else if (type === 'wall') {
@@ -1489,27 +1502,35 @@ class Bedroom {
     }
 
     createRoom() {
-        // High-Quality Procedural Textures (Optimized)
-        const woodTex = this.generateProceduralTexture('wood', '#3a2415', 256, 256);
-        const wallTex = this.generateProceduralTexture('wall', '#7a7d80', 256, 256); // Gray/Off-white walls
+        // High-Quality Procedural Textures (Themed)
+        const woodTex = this.generateProceduralTexture('wood', '#2b1b11', 256, 256);
+        const wallTex = this.generateProceduralTexture('wood_vertical', '#332014', 512, 512); 
         const fabricTex = this.generateProceduralTexture('fabric', '#2d3238', 128, 128);
         const blanketTex = this.generateProceduralTexture('fabric', '#424855', 128, 128);
-        const floorTex = this.generateProceduralTexture('wood', '#1e1611', 512, 512); // Reduced from 1024
-        floorTex.repeat.set(8, 8); // Better scaling for 10x10 floor
+        const floorTex = this.generateProceduralTexture('wood_floor', '#443224', 512, 512); 
+        const rugTex = this.generateProceduralTexture('fabric', '#55585b', 256, 256);
+        
+        wallTex.repeat.set(10, 3);
+        floorTex.repeat.set(5, 5);
+        rugTex.repeat.set(3, 3);
+
         const paperTex = this.generateProceduralTexture('noise', '#eeeeee', 64, 64);
         const paintingCanvasTex = this.generateProceduralTexture('noise', '#111111', 128, 128);
         const glassTex = this.generateProceduralTexture('noise', '#aaaacc', 64, 64);
+        const ceilingTex = this.generateProceduralTexture('noise', '#a49f99', 256, 256);
 
         // Advanced Materials
-        const floorMat = new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.6, bumpMap: floorTex, bumpScale: 0.015, metalness: 0.1 });
-        const wallMat = new THREE.MeshStandardMaterial({ map: wallTex, roughness: 0.95, bumpMap: wallTex, bumpScale: 0.005 });
+        const floorMat = new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.85, bumpMap: floorTex, bumpScale: 0.005 });
+        const rugMat = new THREE.MeshStandardMaterial({ map: rugTex, roughness: 1.0, bumpMap: rugTex, bumpScale: 0.02 });
+        const wallMat = new THREE.MeshStandardMaterial({ map: wallTex, roughness: 0.8, bumpMap: wallTex, bumpScale: 0.01 });
+        const ceilingMat = new THREE.MeshStandardMaterial({ map: ceilingTex, roughness: 1.0 });
         const woodMat = new THREE.MeshStandardMaterial({ map: woodTex, roughness: 0.7, bumpMap: woodTex, bumpScale: 0.02, metalness: 0.05 });
-        const whiteWoodMat = new THREE.MeshStandardMaterial({ color: 0xc8c8c8, roughness: 0.8 });
+        const whiteWoodMat = new THREE.MeshStandardMaterial({ color: 0x4a3a30, roughness: 0.8 }); // matched to dark wood for trim
         const fabricMat = new THREE.MeshStandardMaterial({ map: fabricTex, roughness: 1.0, bumpMap: fabricTex, bumpScale: 0.05 });
         const blanketMat = new THREE.MeshStandardMaterial({ map: blanketTex, roughness: 1.0, bumpMap: blanketTex, bumpScale: 0.05 });
-        const pillowMat = new THREE.MeshStandardMaterial({ color: 0xdddddd, roughness: 0.9 });
+        const pillowMat = new THREE.MeshStandardMaterial({ color: 0x999999, roughness: 0.9 });
         const paperMat = new THREE.MeshStandardMaterial({ map: paperTex, roughness: 0.8 });
-        const metalMat = new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.4, metalness: 0.8 });
+        const metalMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.5, metalness: 0.8 });
         const glassMat = new THREE.MeshStandardMaterial({ color: 0x112233, transparent: true, opacity: 0.4, roughness: 0.1, metalness: 0.9, envMapIntensity: 1.0 });
         const emissiveMat = new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0xff0000, emissiveIntensity: 2.0 });
         const paintingMat = new THREE.MeshStandardMaterial({ map: paintingCanvasTex, roughness: 0.5 });
@@ -1541,8 +1562,15 @@ class Bedroom {
         floor.receiveShadow = true;
         this.scene.add(floor);
         
+        // Large Grey Rug
+        const rug = new THREE.Mesh(new THREE.PlaneGeometry(6, 5), rugMat);
+        rug.rotation.x = -Math.PI / 2;
+        rug.position.y = 0.01;
+        rug.receiveShadow = true;
+        this.scene.add(rug);
+
         // Ceiling
-        const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), wallMat);
+        const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), ceilingMat);
         ceiling.rotation.x = Math.PI / 2;
         ceiling.position.y = 3.5;
         this.scene.add(ceiling);
@@ -1574,9 +1602,9 @@ class Bedroom {
         this.rainPlane.position.set(0, 1.75, -6.0);
         this.scene.add(this.rainPlane);
 
-        // Ambient Moonlight (Cinematic)
-        const moonlight = new THREE.DirectionalLight(0xaaccff, 1.8);
-        moonlight.position.set(0, 4, -10); // High up outside window
+        // Ambient Moonlight (Cinematic - Not too bright)
+        const moonlight = new THREE.DirectionalLight(0x7799bb, 0.8); // Dimmer, more focused blue
+        moonlight.position.set(0, 3, -8); 
         moonlight.target.position.set(0, 0, 0);
         moonlight.castShadow = true;
         // Optimized Shadow Map Size
@@ -1592,8 +1620,8 @@ class Bedroom {
         this.scene.add(moonlight);
         this.scene.add(moonlight.target);
         
-        // Very soft fill light to keep things barely readable
-        const ambient = new THREE.AmbientLight(0x1a2230, 0.4);
+        // Very soft fill light to keep pitch black corners barely visible
+        const ambient = new THREE.AmbientLight(0x1a2230, 0.15); // extremely low
         this.scene.add(ambient);
         
         // 1. Bed (South-West corner)
@@ -1620,13 +1648,13 @@ class Bedroom {
         
         // 3. Desk (East wall)
         const desk = createDetailedDesk(woodMat, metalMat);
-        desk.position.set(4.0, 0, -2.0);
+        desk.position.set(3.5, 0, -2.0); // Moved slightly inwards onto the rug
         this.scene.add(desk);
         this.colliders.push(desk);
         
         // 4. Chair
         const chair = createDetailedChair(metalMat, fabricMat);
-        chair.position.set(3.0, 0, -2.0);
+        chair.position.set(2.5, 0, -2.0); // Adjusted for new desk position
         chair.rotation.y = -Math.PI / 2 + 0.2; // organic turn
         this.scene.add(chair);
         this.colliders.push(chair);
@@ -1654,13 +1682,13 @@ class Bedroom {
         lampLight.castShadow = true;
         lampGroup.add(lampLight);
         
-        lampGroup.position.set(4.1, 0.8, -2.8);
+        lampGroup.position.set(3.6, 0.8, -2.8);
         this.scene.add(lampGroup);
         
         lampBase.userData.light = lampLight;
         interactionSystem.add(lampBase, () => {
             if (lampLight.intensity === 0) {
-                lampLight.intensity = 1.2;
+                lampLight.intensity = 1.0;
                 audioManager.play("rattle");
                 objectiveSystem.advanceTo(4);
             } else {
@@ -1671,7 +1699,7 @@ class Bedroom {
 
         // 6. Clock (on desk)
         const clock = createDetailedClock(blackMat, glassMat, emissiveMat);
-        clock.position.set(4.2, 0.85, -1.2);
+        clock.position.set(3.7, 0.85, -1.2);
         clock.rotation.y = -Math.PI / 4;
         this.scene.add(clock);
         this.clockMesh = clock; // Store for HorrorEventManager
@@ -1733,7 +1761,7 @@ class Bedroom {
         // 10. Laptop & Diary
         const laptopGeo = new THREE.BoxGeometry(0.35, 0.02, 0.25);
         const laptop = new THREE.Mesh(laptopGeo, metalMat);
-        laptop.position.set(3.9, 0.81, -2.0);
+        laptop.position.set(3.4, 0.81, -2.0); // Adjusted for new desk position
         laptop.rotation.y = 0.1;
         this.scene.add(laptop);
         interactionSystem.add(laptop, () => {
@@ -1741,7 +1769,7 @@ class Bedroom {
         }, "Laptop");
         
         const diary = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.03, 0.15), new THREE.MeshStandardMaterial({ color: 0x5a2a2a, roughness: 0.9 }));
-        diary.position.set(4.2, 0.815, -2.3);
+        diary.position.set(3.7, 0.815, -2.3);
         diary.rotation.y = -0.15;
         this.scene.add(diary);
         interactionSystem.add(diary, () => {
@@ -1750,7 +1778,7 @@ class Bedroom {
 
         // 11. Backpack & Suitcase
         const backpack = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.6, 0.4), new THREE.MeshStandardMaterial({ color: 0x113355, roughness: 1.0 }));
-        backpack.position.set(2.5, 0.3, 2.0);
+        backpack.position.set(2.0, 0.3, 2.0); // Adjusted closer to center
         backpack.rotation.y = Math.PI / 4;
         backpack.castShadow = true;
         this.scene.add(backpack);
@@ -1760,7 +1788,7 @@ class Bedroom {
         }, "Backpack");
         
         const suitcase = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.3, 0.5), new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.7 }));
-        suitcase.position.set(3.5, 0.15, 2.5);
+        suitcase.position.set(3.0, 0.15, 2.5);
         suitcase.rotation.y = 0.1;
         suitcase.castShadow = true;
         this.scene.add(suitcase);
@@ -1768,7 +1796,7 @@ class Bedroom {
 
         // 12. Clothes
         const clothes = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.08, 0.35), new THREE.MeshStandardMaterial({ color: 0x552222, roughness: 1.0 }));
-        clothes.position.set(3.0, 0.55, -2.0); // on chair seat
+        clothes.position.set(2.5, 0.55, -2.0); // on chair seat
         this.scene.add(clothes);
 
         // 13. Shoes
@@ -1813,7 +1841,7 @@ class Bedroom {
 
         // 16. Internship Documents
         const docs = new THREE.Mesh(new THREE.PlaneGeometry(0.2, 0.25), paperMat);
-        docs.position.set(3.8, 0.811, -1.7);
+        docs.position.set(3.3, 0.811, -1.7);
         docs.rotation.x = -Math.PI / 2;
         docs.rotation.z = 0.4;
         docs.receiveShadow = true;
@@ -1840,18 +1868,6 @@ class Bedroom {
     }
 
     update(delta) {
-        if (typeof game !== "undefined" && game.cameraSys) {
-            const playerPos = game.cameraSys.camera.position;
-            
-            // Clock spatialization
-            const clockPos = new THREE.Vector3(2.2, 0.8, -0.6); // updated clock pos
-            const distToClock = playerPos.distanceTo(clockPos);
-            let clockVol = 1.0 - ((distToClock - 1) / 7);
-            if(clockVol < 0) clockVol = 0;
-            if(clockVol > 1) clockVol = 1;
-            audioManager.setTrackVolume("clock", clockVol);
-        }
-
         // Scroll rain texture
         if (this.rainPlane) {
             this.rainPlane.material.map.offset.y -= delta * 2.0;
