@@ -262,10 +262,59 @@ canvas {
 }
 
 #intro-text-container {
-    font-size: 32px;
     text-align: center;
     opacity: 0;
-    transition: opacity 2s ease;
+}
+
+/* Intro Cinematic Text Styles */
+.intro-text-cinematic {
+    font-family: 'Cinzel', serif;
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: 12px;
+    color: #dddddd;
+    text-transform: uppercase;
+    text-shadow: 0 0 15px rgba(255,255,255,0.3);
+}
+
+.intro-text-large {
+    font-size: 42px;
+    font-weight: 600;
+    letter-spacing: 14px;
+    color: #ffffff;
+    text-shadow: 0 0 20px rgba(255,255,255,0.5), 0 0 5px rgba(200,200,200,0.5);
+    animation: textFlicker 4s infinite alternate;
+}
+
+.intro-text-largest {
+    font-size: 64px;
+    font-weight: 900;
+    letter-spacing: 16px;
+    color: #ffffff;
+    text-shadow: 0 0 30px rgba(255,255,255,0.7), 0 0 10px rgba(255,0,0,0.3);
+}
+
+.intro-text-creepy {
+    font-size: 36px;
+    font-weight: 400;
+    letter-spacing: 18px;
+    color: #aaaaaa;
+    text-shadow: 0 0 20px rgba(255,255,255,0.1), 0 0 15px rgba(150,0,0,0.4);
+    animation: slowCreep 2s infinite alternate;
+}
+
+@keyframes textFlicker {
+    0% { opacity: 0.9; }
+    5% { opacity: 0.8; }
+    10% { opacity: 1; }
+    15% { opacity: 0.85; }
+    20% { opacity: 0.95; }
+    100% { opacity: 1; }
+}
+
+@keyframes slowCreep {
+    0% { filter: blur(0px); opacity: 0.9; }
+    100% { filter: blur(1px); opacity: 1; text-shadow: 0 0 30px rgba(255,255,255,0.2), 0 0 20px rgba(200,0,0,0.6); }
 }
 
 /* Pause & Settings Menu background */

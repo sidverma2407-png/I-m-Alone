@@ -88,7 +88,7 @@ class MainMenuUI {
         this.isTransitioning = true;
         
         // Darken screen and fade UI
-        this.element.style.transition = "background-color 3s ease";
+        this.element.style.transition = "background-color 1.5s ease";
         this.element.style.backgroundColor = "#000";
         
         // Hide all text except selected
@@ -99,18 +99,28 @@ class MainMenuUI {
                 const opts = children[i].children;
                 for(let j=0; j<opts.length; j++) {
                     if (!opts[j].classList.contains('active')) {
-                        opts[j].style.transition = "opacity 2s ease";
+                        opts[j].style.transition = "opacity 1.5s ease";
                         opts[j].style.opacity = "0";
                     }
                 }
             } else {
-                children[i].style.transition = "opacity 2s ease";
+                children[i].style.transition = "opacity 1.5s ease";
                 children[i].style.opacity = "0";
             }
         }
 
         audioManager.fadeOut("menu-music", 3000);
         audioManager.fadeOut("menu-tension", 3000);
+        
+        // Stop the menu thunder scheduler
+        if (typeof horrorEventManager !== 'undefined') {
+            horrorEventManager.nextThunderTime = performance.now() + 999999;
+        }
+        
+        // Clock starts 0.5s after clicking NEW GAME
+        setTimeout(() => {
+            audioManager.fadeIn("clock", 2000);
+        }, 500);
         
         // Wait for fade to complete before transitioning scene
         setTimeout(() => {
@@ -131,7 +141,7 @@ class MainMenuUI {
             
             sceneManager.changeScene("intro");
             this.isTransitioning = false;
-        }, 3000);
+        }, 1500);
     }
 }
 const mainMenuUI = new MainMenuUI();
