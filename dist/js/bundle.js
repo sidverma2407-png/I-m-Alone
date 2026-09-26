@@ -852,25 +852,6 @@ class Intro {
             }
         };
         document.addEventListener("keydown", this.skipListener);
-        
-        this.script = [
-            { text: "YOU ARE SID.", class: "" },
-            { text: "YOU RECENTLY GOT AN INTERNSHIP.", class: "" },
-            { text: "FAR FROM HOME.", class: "" },
-            { text: "THIS PLACE WAS SUPPOSED TO BE TEMPORARY.", class: "" },
-            { text: "YOUR FIRST NIGHT.", class: "" },
-            { text: "3:14 AM", class: "intro-text-largest" },
-            { text: "YOU WAKE UP.", class: "intro-text-large" },
-            { text: "The rain is still falling.", class: "" },
-            { text: "And something feels wrong.", class: "" }
-        ];
-        
-        // Timings
-        this.fadeInTime = 2.0;
-        this.holdTime = 2.5;
-        this.fadeOutTime = 2.0;
-        this.gapTime = 1.0;
-        this.phaseDuration = this.fadeInTime + this.holdTime + this.fadeOutTime + this.gapTime;
     }
     
     init() {
@@ -881,7 +862,6 @@ class Intro {
         this.totalTime = 0; 
         this.phase = 0;
         this.skipped = false;
-        this.state = "gap"; // 'gap', 'in', 'hold', 'out'
         
         if (horrorEventManager.nextThunderTime) {
             horrorEventManager.nextThunderTime = performance.now() + 9999999;
@@ -892,38 +872,67 @@ class Intro {
         if (this.skipped) return;
         this.totalTime += delta;
         
-        // Delay start by 1.5s as per original menu fade timeline
-        if (this.totalTime < 1.5) return;
+        const t = this.totalTime + 1.5; 
         
-        const t = this.totalTime - 1.5;
-        
-        if (this.phase >= this.script.length) {
-            if (this.state !== "done") {
-                this.state = "done";
-                this.finish();
-            }
-            return;
-        }
-        
-        const phaseTime = t - (this.phase * this.phaseDuration);
-        
-        if (phaseTime < 0) {
-            // Gap before first phase (shouldn't happen with logic, but safety)
-        } else if (phaseTime < this.fadeInTime) {
-            if (this.state !== "in") {
-                this.state = "in";
-                this.showText(this.script[this.phase].text, this.script[this.phase].class);
-            }
-        } else if (phaseTime < this.fadeInTime + this.holdTime) {
-            this.state = "hold";
-        } else if (phaseTime < this.fadeInTime + this.holdTime + this.fadeOutTime) {
-            if (this.state !== "out") {
-                this.state = "out";
-                this.hideText();
-            }
-        } else {
-            this.state = "gap";
+        // Exact timeline from prompt
+        if (t >= 1.5 && this.phase === 0) {
+            this.showText("YOU ARE SID.");
             this.phase++;
+        }
+        else if (t >= 3.0 && this.phase === 1) { 
+            this.hideText();
+            this.phase++;
+        }
+        else if (t >= 3.5 && this.phase === 2) { 
+            this.showText("AND THEN...");
+            this.phase++;
+        }
+        else if (t >= 4.0 && this.phase === 3) { 
+            this.hideText();
+            this.phase++;
+        }
+        else if (t >= 4.5 && this.phase === 4) { 
+            this.showText("YOU WAKE UP.", "intro-text-large");
+            this.phase++;
+        }
+        else if (t >= 6.0 && this.phase === 5) { 
+            this.hideText();
+            this.phase++;
+        }
+        else if (t >= 6.5 && this.phase === 6) { 
+            this.showText("3:14 AM", "intro-text-largest");
+            this.phase++;
+        }
+        else if (t >= 8.0 && this.phase === 7) { 
+            this.hideText();
+            this.phase++;
+        }
+        else if (t >= 8.5 && this.phase === 8) { 
+            this.showText("THE HOUSE IS SILENT.");
+            this.phase++;
+        }
+        else if (t >= 9.5 && this.phase === 9) { 
+            this.hideText();
+            this.phase++;
+        }
+        else if (t >= 10.0 && this.phase === 10) { 
+            this.showText("NO ONE IS HOME.");
+            this.phase++;
+        }
+        else if (t >= 11.0 && this.phase === 11) { 
+            this.hideText();
+            this.phase++;
+        }
+        else if (t >= 11.5 && this.phase === 12) { 
+            this.showText("SOMEONE IS WAITING.", "intro-text-creepy");
+            this.phase++;
+        }
+        else if (t >= 13.5 && this.phase === 13) { 
+            this.hideText();
+            this.phase++;
+        }
+        else if (t >= 14.5 && this.phase === 14) { 
+            this.finish();
         }
     }
     
@@ -935,12 +944,17 @@ class Intro {
         
         void this.textElement.offsetWidth;
         
-        this.textElement.style.transition = `opacity ${this.fadeInTime}s ease`;
+        if (extraClass === "intro-text-creepy") {
+            this.textElement.style.transition = "opacity 2s ease";
+        } else {
+            this.textElement.style.transition = "opacity 0.5s ease";
+        }
+        
         this.textElement.style.opacity = 1;
     }
     
     hideText() {
-        this.textElement.style.transition = `opacity ${this.fadeOutTime}s ease`;
+        this.textElement.style.transition = "opacity 0.5s ease";
         this.textElement.style.opacity = 0;
     }
     
@@ -953,6 +967,10 @@ class Intro {
     finish() {
         this.uiElement.classList.add("hidden");
         horrorEventManager.nextThunderTime = performance.now() + 10000;
+        
+        // Clock is NO LONGER faded out here, as requested in prompt:
+        // "Clock continues into bedroom without duplication"
+        
         sceneManager.changeScene("bedroom");
         objectiveSystem.setObjective("WAKE UP");
     }
@@ -985,14 +1003,62 @@ class Bedroom {
         audioManager.setTrackVolume("rain", 0.6); 
     }
 
+    generateProceduralTexture(type, color, width=256, height=256) {
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = color;
+        ctx.fillRect(0, 0, width, height);
+
+        const imgData = ctx.getImageData(0, 0, width, height);
+        const data = imgData.data;
+
+        for (let i = 0; i < data.length; i += 4) {
+            let noise = 0;
+            if (type === 'wood') {
+                const x = (i / 4) % width;
+                const y = Math.floor((i / 4) / width);
+                noise = Math.sin(x * 0.1 + Math.sin(y * 0.05) * 10) * 15;
+                noise += (Math.random() - 0.5) * 10;
+            } else if (type === 'fabric') {
+                noise = (Math.random() - 0.5) * 20;
+            } else if (type === 'wall') {
+                noise = (Math.random() - 0.5) * 8;
+            } else if (type === 'noise') {
+                noise = (Math.random() - 0.5) * 30;
+            }
+
+            data[i] = Math.max(0, Math.min(255, data[i] + noise));
+            data[i+1] = Math.max(0, Math.min(255, data[i+1] + noise));
+            data[i+2] = Math.max(0, Math.min(255, data[i+2] + noise));
+        }
+
+        ctx.putImageData(imgData, 0, 0);
+        const tex = new THREE.CanvasTexture(canvas);
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.RepeatWrapping;
+        return tex;
+    }
+
     createRoom() {
+        // Procedural Textures
+        const woodTex = this.generateProceduralTexture('wood', '#4a2e1b');
+        const wallTex = this.generateProceduralTexture('wall', '#4a4a4a');
+        const fabricTex = this.generateProceduralTexture('fabric', '#2d3238');
+        const blanketTex = this.generateProceduralTexture('fabric', '#3d4450');
+        const floorTex = this.generateProceduralTexture('wood', '#2e2621');
+        floorTex.repeat.set(4, 4);
+        const paperTex = this.generateProceduralTexture('noise', '#eeeeee');
+
         // Materials
-        const floorMat = new THREE.MeshStandardMaterial({ color: 0x2e2621, roughness: 0.8 });
-        const wallMat = new THREE.MeshStandardMaterial({ color: 0x4a4a4a, roughness: 0.9 });
-        const woodMat = new THREE.MeshStandardMaterial({ color: 0x3d2314, roughness: 0.7 });
+        const floorMat = new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.9, bumpMap: floorTex, bumpScale: 0.02 });
+        const wallMat = new THREE.MeshStandardMaterial({ map: wallTex, roughness: 1.0, bumpMap: wallTex, bumpScale: 0.01 });
+        const woodMat = new THREE.MeshStandardMaterial({ map: woodTex, roughness: 0.8, bumpMap: woodTex, bumpScale: 0.03 });
         const whiteWoodMat = new THREE.MeshStandardMaterial({ color: 0xdddddd, roughness: 0.8 });
-        const fabricMat = new THREE.MeshStandardMaterial({ color: 0x1f2326, roughness: 0.9 });
-        const paperMat = new THREE.MeshStandardMaterial({ color: 0xeeeeee, roughness: 0.5 });
+        const fabricMat = new THREE.MeshStandardMaterial({ map: fabricTex, roughness: 1.0, bumpMap: fabricTex, bumpScale: 0.05 });
+        const blanketMat = new THREE.MeshStandardMaterial({ map: blanketTex, roughness: 1.0, bumpMap: blanketTex, bumpScale: 0.05 });
+        const paperMat = new THREE.MeshStandardMaterial({ map: paperTex, roughness: 0.6 });
         const blackMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.4 });
         
         // Room Dimensions: 5m x 4m, 3m high
@@ -1030,7 +1096,7 @@ class Bedroom {
         pillow.position.set(-1.8, 0.55, 1.6);
         this.scene.add(pillow);
         
-        const blanket = new THREE.Mesh(new THREE.BoxGeometry(1.35, 0.25, 1.4), fabricMat);
+        const blanket = new THREE.Mesh(new THREE.BoxGeometry(1.35, 0.25, 1.4), blanketMat);
         blanket.position.set(-1.8, 0.45, 0.4);
         this.scene.add(blanket);
         

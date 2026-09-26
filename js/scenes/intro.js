@@ -23,25 +23,6 @@ class Intro {
             }
         };
         document.addEventListener("keydown", this.skipListener);
-        
-        this.script = [
-            { text: "YOU ARE SID.", class: "" },
-            { text: "YOU RECENTLY GOT AN INTERNSHIP.", class: "" },
-            { text: "FAR FROM HOME.", class: "" },
-            { text: "THIS PLACE WAS SUPPOSED TO BE TEMPORARY.", class: "" },
-            { text: "YOUR FIRST NIGHT.", class: "" },
-            { text: "3:14 AM", class: "intro-text-largest" },
-            { text: "YOU WAKE UP.", class: "intro-text-large" },
-            { text: "The rain is still falling.", class: "" },
-            { text: "And something feels wrong.", class: "" }
-        ];
-        
-        // Timings
-        this.fadeInTime = 2.0;
-        this.holdTime = 2.5;
-        this.fadeOutTime = 2.0;
-        this.gapTime = 1.0;
-        this.phaseDuration = this.fadeInTime + this.holdTime + this.fadeOutTime + this.gapTime;
     }
     
     init() {
@@ -52,7 +33,6 @@ class Intro {
         this.totalTime = 0; 
         this.phase = 0;
         this.skipped = false;
-        this.state = "gap"; // 'gap', 'in', 'hold', 'out'
         
         if (horrorEventManager.nextThunderTime) {
             horrorEventManager.nextThunderTime = performance.now() + 9999999;
@@ -63,38 +43,67 @@ class Intro {
         if (this.skipped) return;
         this.totalTime += delta;
         
-        // Delay start by 1.5s as per original menu fade timeline
-        if (this.totalTime < 1.5) return;
+        const t = this.totalTime + 1.5; 
         
-        const t = this.totalTime - 1.5;
-        
-        if (this.phase >= this.script.length) {
-            if (this.state !== "done") {
-                this.state = "done";
-                this.finish();
-            }
-            return;
-        }
-        
-        const phaseTime = t - (this.phase * this.phaseDuration);
-        
-        if (phaseTime < 0) {
-            // Gap before first phase (shouldn't happen with logic, but safety)
-        } else if (phaseTime < this.fadeInTime) {
-            if (this.state !== "in") {
-                this.state = "in";
-                this.showText(this.script[this.phase].text, this.script[this.phase].class);
-            }
-        } else if (phaseTime < this.fadeInTime + this.holdTime) {
-            this.state = "hold";
-        } else if (phaseTime < this.fadeInTime + this.holdTime + this.fadeOutTime) {
-            if (this.state !== "out") {
-                this.state = "out";
-                this.hideText();
-            }
-        } else {
-            this.state = "gap";
+        // Exact timeline from prompt
+        if (t >= 1.5 && this.phase === 0) {
+            this.showText("YOU ARE SID.");
             this.phase++;
+        }
+        else if (t >= 3.0 && this.phase === 1) { 
+            this.hideText();
+            this.phase++;
+        }
+        else if (t >= 3.5 && this.phase === 2) { 
+            this.showText("AND THEN...");
+            this.phase++;
+        }
+        else if (t >= 4.0 && this.phase === 3) { 
+            this.hideText();
+            this.phase++;
+        }
+        else if (t >= 4.5 && this.phase === 4) { 
+            this.showText("YOU WAKE UP.", "intro-text-large");
+            this.phase++;
+        }
+        else if (t >= 6.0 && this.phase === 5) { 
+            this.hideText();
+            this.phase++;
+        }
+        else if (t >= 6.5 && this.phase === 6) { 
+            this.showText("3:14 AM", "intro-text-largest");
+            this.phase++;
+        }
+        else if (t >= 8.0 && this.phase === 7) { 
+            this.hideText();
+            this.phase++;
+        }
+        else if (t >= 8.5 && this.phase === 8) { 
+            this.showText("THE HOUSE IS SILENT.");
+            this.phase++;
+        }
+        else if (t >= 9.5 && this.phase === 9) { 
+            this.hideText();
+            this.phase++;
+        }
+        else if (t >= 10.0 && this.phase === 10) { 
+            this.showText("NO ONE IS HOME.");
+            this.phase++;
+        }
+        else if (t >= 11.0 && this.phase === 11) { 
+            this.hideText();
+            this.phase++;
+        }
+        else if (t >= 11.5 && this.phase === 12) { 
+            this.showText("SOMEONE IS WAITING.", "intro-text-creepy");
+            this.phase++;
+        }
+        else if (t >= 13.5 && this.phase === 13) { 
+            this.hideText();
+            this.phase++;
+        }
+        else if (t >= 14.5 && this.phase === 14) { 
+            this.finish();
         }
     }
     
@@ -106,12 +115,17 @@ class Intro {
         
         void this.textElement.offsetWidth;
         
-        this.textElement.style.transition = `opacity ${this.fadeInTime}s ease`;
+        if (extraClass === "intro-text-creepy") {
+            this.textElement.style.transition = "opacity 2s ease";
+        } else {
+            this.textElement.style.transition = "opacity 0.5s ease";
+        }
+        
         this.textElement.style.opacity = 1;
     }
     
     hideText() {
-        this.textElement.style.transition = `opacity ${this.fadeOutTime}s ease`;
+        this.textElement.style.transition = "opacity 0.5s ease";
         this.textElement.style.opacity = 0;
     }
     
@@ -124,6 +138,10 @@ class Intro {
     finish() {
         this.uiElement.classList.add("hidden");
         horrorEventManager.nextThunderTime = performance.now() + 10000;
+        
+        // Clock is NO LONGER faded out here, as requested in prompt:
+        // "Clock continues into bedroom without duplication"
+        
         sceneManager.changeScene("bedroom");
         objectiveSystem.setObjective("WAKE UP");
     }
